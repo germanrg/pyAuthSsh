@@ -71,7 +71,7 @@ def classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sess
 #	- [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2
 #	- [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER]
 #	- [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER]
-#   - sshd: Did not receive identification string from X.X.X.X
+#   - [MONTH] [DAY] [TIME] [HOST] sshd: Did not receive identification string from [IP]
 #   - NEW - [MONTH] [DAY] [TIME] [HOST] sshd: Accepted publickey for [USER] from [IP] port [PORT] ssh2: [KEY]
 
 
@@ -173,7 +173,7 @@ def get_auth_fails(auth_failures):
 # This function shows identifications not received logged in /var/auth/auth.log
 def get_no_identification(no_identifications):
 	''' Example auth.log line:
-	Aug 19 06:28:43 izxvps sshd: Did not receive identification string from [IP]
+	[MONTH] [DAY] [TIME] [HOST] sshd: Did not receive identification string from [IP]
 	'''
 	if len(no_identifications) > 0:
 		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: No received identifications have been loaded.\n")
@@ -250,12 +250,5 @@ if __name__ == "__main__":
 		else:
 			print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tIncorrect option. Try again!\n")
 			option = '0'
-
-"""
-Jan 31 16:54:01 nb200 sshd[15920]: Failed password for gnrg from 127.0.0.1 port 38861 ssh2
-Jan 31 16:54:07 nb200 sshd[15920]: message repeated 2 times: [ Failed password for gnrg from 127.0.0.1 port 38861 ssh2]
-Jan 31 16:54:07 nb200 sshd[15920]: Connection closed by 127.0.0.1 [preauth]
-Jan 31 16:54:07 nb200 sshd[15920]: PAM 2 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=localhost  user=gnrg
-"""
 
 # Read about use of fail2ban for the detected intrussion attempts.

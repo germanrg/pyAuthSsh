@@ -108,7 +108,7 @@ def get_auth_fails(auth_failures):
 	for fail in auth_failures:
 		output = '\t'
 		fields = fail.split(" ")
-		output = 'Failed attempt time:\t' 
+		output += 'Failed attempt time:\t' 
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
 		output += date + "\n\t"
 		info = str(fields[15]) + "\t" + str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"

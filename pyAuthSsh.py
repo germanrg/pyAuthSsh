@@ -42,12 +42,13 @@ def script_header():
 
 # This function shows menu options
 def show_menu_options():
-	print(Fore.YELLOW + "\t1 - )   " + Fore.RESET + "Show all SSH servers started in this host")
-	print(Fore.YELLOW + "\t2 - )   " + Fore.RESET + "Show all accepted passwords and opened sessiones")
-	print(Fore.YELLOW + "\t3 - )   " + Fore.RESET + "Show all closed sessions")
+	print(Fore.YELLOW + "\t1 - )   " + Fore.RESET + "Show all times the SSH server is up")
+	print(Fore.YELLOW + "\t2 - )   " + Fore.RESET + "Show all Accepted passwords")
+	print(Fore.YELLOW + "\t3 - )   " + Fore.RESET + "Show all Closed sessions")
 	print(Fore.YELLOW + "\t4 - )   " + Fore.RESET + "Show all ssh failed authentications")
 	print(Fore.YELLOW + "\t5 - )   " + Fore.RESET + "Show all ssh not received identifications")
-	print(Fore.YELLOW + "\t6 - )   " + Fore.RESET + "Exit")
+	print(Fore.YELLOW + "\t6 - )   " + Fore.RESET + "Show all accepted public keys")
+	print(Fore.YELLOW + "\t7 - )   " + Fore.RED + "Exit")
 	print("\n")
 	option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")
 	return option
@@ -64,22 +65,29 @@ def get_log():
 	return text
 
 # This function classify relevant lines on categories
-def classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications):
+def classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys):
 # Types of sshd lines analyzed:
-#	- Server listening [Date - host - ip - port]
-#	- Accepted password + sshd:session
-#	- Received disconnect + sshd:session
-#	- sshd:auth authentication failure [LogName - uid - euid - tty - ruser - rhost - user ]
-#   - NEW: sshd[7748]: Did not receive identification string from X.X.X.X
+#	- [MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT].
+#	- [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2
+#	- [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER]
+#	- [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER]
+#   - sshd: Did not receive identification string from X.X.X.X
+#   - NEW - [MONTH] [DAY] [TIME] [HOST] sshd: Accepted publickey for [USER] from [IP] port [PORT] ssh2: [KEY]
+
+
 	for entry in sshd_lines:
 		if entry.find("Server listening") != -1: servers_listening.append(entry)
 		if entry.find("Accepted password") != -1: opened_sessions.append(entry)
 		if entry.find("Received disconnect") != -1: closed_sessions.append(entry)
 		if entry.find("pam_unix(sshd:auth): authentication failure") != -1: auth_failures.append(entry)
 		if entry.find("Did not receive identification") != -1: no_identifications.append(entry)
+		if entry.find("Accepted publickey") != -1: accepted_public_keys.append(entry)
 
 # This function shows local ssh daemons runned logged in /var/auth/auth.log
 def get_servers(servers_listening):
+	''' Example auth.log line:
+	[MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT].
+	'''
 	if len(servers_listening) > 0:
 		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Servers listening have been loaded.\n")
 	else: 
@@ -96,31 +104,10 @@ def get_servers(servers_listening):
 		output += "Listening on port: " + str(fields[10]) + "\n"
 		print output
 
-# This function shows failed authentications logged in /var/auth/auth.log
-def get_auth_fails(auth_failures):
-	''' Example auth.log line:
-	Jan 31 16:53:59 nb200 sshd[15920]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=localhost  user=xxxx
-	'''
-	if len(auth_failures) > 0:
-		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: authentication failures have been loaded.\n")
-	else: 
-		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no authentication failures.\n")
-
-	for fail in auth_failures:
-		output = '\t'
-		fields = fail.split(" ")
-		fields = filter(lambda x: x!='', fields) # Remove blanks
-		output += 'Failed attempt time:\t' 
-		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-		output += date + "\n\t"
-		info = str(fields[14]) + "\t" + str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"
-		output += info
-		print output
-
 # This function shows opened sessions logged in /var/auth/auth.log
 def get_opened_sessions(opened_sessions):
 	''' Example auth.log line:
-	Jan 31 16:53:48 nb200 sshd[15885]: Received disconnect from 127.0.0.1: 11: disconnected by user
+	[MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2
 	'''
 	if len(opened_sessions) > 0:
 		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Opened sessions have been loaded.\n")
@@ -140,7 +127,7 @@ def get_opened_sessions(opened_sessions):
 # This function shows opened sessions logged in /var/auth/auth.log
 def get_closed_sessions(closed_sessions):
 	''' Example auth.log line:
-	Jan 31 16:53:48 nb200 sshd[15885]: Received disconnect from 127.0.0.1: 11: disconnected by user
+	[MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER]
 	'''
 	if len(closed_sessions) > 0:
 		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Closed sessions have been loaded.\n")
@@ -157,10 +144,36 @@ def get_closed_sessions(closed_sessions):
 		info += output
 		print info
 
+# This function shows failed authentications logged in /var/auth/auth.log
+def get_auth_fails(auth_failures):
+	''' Example auth.log line:
+	[MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER]
+	'''
+	if len(auth_failures) > 0:
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: authentication failures have been loaded.\n")
+	else: 
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no authentication failures.\n")
+
+	for fail in auth_failures:
+		output = '\t'
+		fields = fail.split(" ")
+		
+		fields = filter(lambda x: x!='', fields) # Remove blanks
+
+
+		output += 'Failed attempt time:\t' 
+		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+		output += date + "\n\t"
+		if len(fields) < 15: info = "user=None\t"
+		else: info = str(fields[14]) + "\t"
+		info += str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"
+		output += info
+		print output
+
 # This function shows identifications not received logged in /var/auth/auth.log
 def get_no_identification(no_identifications):
 	''' Example auth.log line:
-	Aug 19 06:28:43 izxvps sshd[5838]: Did not receive identification string from 59.151.37.10
+	Aug 19 06:28:43 izxvps sshd: Did not receive identification string from [IP]
 	'''
 	if len(no_identifications) > 0:
 		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: No received identifications have been loaded.\n")
@@ -177,6 +190,29 @@ def get_no_identification(no_identifications):
 		info += output
 		print info
 
+# This function shows all accepted public keys logged in /var/auth/auth.log
+def get_accepted_public_keys(accepted_public_keys):
+	''' Example auth.log line:
+	[MONTH] [DAY] [TIME] [HOST] sshd: Accepted publickey for [USER] from [IP] port [PORT] ssh2: [KEY]
+	'''
+	if len(accepted_public_keys) > 0:
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Accepted public keys have been loaded.\n")
+	else: 
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no accepted public keys.\n")
+
+	for pubkey in accepted_public_keys:
+		output = '\t'
+		fields = pubkey.split(" ")
+		fields = filter(lambda x: x!='', fields) # Remove blanks
+		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+		output += 'Log date:\t' + date + "\n"
+		info = "\tUser: " + str(fields[8]) + "\tIP: " + str(fields[10]) + "\tPort:" + str(fields[12]) + "\n\tKey: "
+		# Add key to output
+		for x in fields[14:]:
+			info += str(x)
+
+		info += "\n" + output
+		print info
 
 if __name__ == "__main__":
 
@@ -196,7 +232,8 @@ if __name__ == "__main__":
 	closed_sessions = []
 	auth_failures = []
 	no_identifications = []
-	classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications)
+	accepted_public_keys = []
+	classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys)
 
 	option = '0'
 	while option:
@@ -208,7 +245,8 @@ if __name__ == "__main__":
 		elif option == "3": get_closed_sessions(closed_sessions)
 		elif option == "4": get_auth_fails(auth_failures)
 		elif option == "5": get_no_identification(no_identifications)
-		elif option == "6": print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tThanks for using. Bye!\n\n\t" + Back.BLUE + "  " + Back.RESET + "\tgnrg@tuta.io\n\n"); break
+		elif option == "6": get_accepted_public_keys(accepted_public_keys)
+		elif option == "7": print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tThanks for using. Bye!\n\n\t" + Back.BLUE + "  " + Back.RESET + "\tgnrg@tuta.io\n\n"); break
 		else:
 			print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tIncorrect option. Try again!\n")
 			option = '0'

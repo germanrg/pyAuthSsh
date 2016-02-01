@@ -3,6 +3,17 @@
 import os
 from colorama import init, Fore, Back, Style # easy-install colorama
 
+# This script has been optimized for black/dark terminal backgrounds.
+""" Types of sshd lines analyzed:
+	- [MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT].
+	- [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2
+	- [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER]
+	- [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER]
+    - [MONTH] [DAY] [TIME] [HOST] sshd: Did not receive identification string from [IP]
+    - [MONTH] [DAY] [TIME] [HOST] sshd: Accepted publickey for [USER] from [IP] port [PORT] ssh2: [KEY]
+	- [MONTH] [DAY] [TIME] [HOST] sshd: message repeated [X] times: [ Failed password for [USER] from [IP] port [PORT] ssh2]
+	- [MONTH] [DAY] [TIME] [HOST] sshd: reverse mapping checking getaddrinfo for [ADDR. INFO] [IP] failed - POSSIBLE BREAK-IN ATTEMPT!
+"""
 """ Available formating colorama constants:
 		Fore: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET.
 		Back: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET.
@@ -29,26 +40,28 @@ months = {"Jan" : 1,
 # This function shows the script header
 def script_header():
 	os.system("clear")
-	print(Back.WHITE + Style.BRIGHT + "                                                                      ")
-	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                  " + Back.WHITE + Style.BRIGHT + "  ")
-	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                  " + Back.WHITE + Style.BRIGHT + "  ")
-	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.RED + "                           pyAuthSsh.py                           " + Back.WHITE + Style.BRIGHT + "  ")
-	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.YELLOW + "                           -._.-**-._.-                           " + Back.WHITE + Style.BRIGHT + "  ")
-	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.GREEN + "                           by gNrg 2016                           " + Back.WHITE + Style.BRIGHT + "  ")
-	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                  " + Back.WHITE + Style.BRIGHT + "  ")
-	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                  " + Back.WHITE + Style.BRIGHT + "  ")
-	print(Back.WHITE + Style.BRIGHT + "                                                                      ")
+	print(Back.WHITE + Style.BRIGHT + "                                                                              ")
+	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                          " + Back.WHITE + Style.BRIGHT + "  ")
+	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                          " + Back.WHITE + Style.BRIGHT + "  ")
+	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.RED + "                               pyAuthSsh.py                               " + Back.WHITE + Style.BRIGHT + "  ")
+	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.YELLOW + "                               -._.-**-._.-                               " + Back.WHITE + Style.BRIGHT + "  ")
+	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.GREEN + "                               by gNrg 2016                               " + Back.WHITE + Style.BRIGHT + "  ")
+	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                          " + Back.WHITE + Style.BRIGHT + "  ")
+	print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                          " + Back.WHITE + Style.BRIGHT + "  ")
+	print(Back.WHITE + Style.BRIGHT + "                                                                              ")
 	print("\n")
 
 # This function shows menu options
 def show_menu_options():
-	print(Fore.YELLOW + "\t1 - )   " + Fore.RESET + "Show all times the SSH server is up")
-	print(Fore.YELLOW + "\t2 - )   " + Fore.RESET + "Show all Accepted passwords")
-	print(Fore.YELLOW + "\t3 - )   " + Fore.RESET + "Show all Closed sessions")
-	print(Fore.YELLOW + "\t4 - )   " + Fore.RESET + "Show all ssh failed authentications")
-	print(Fore.YELLOW + "\t5 - )   " + Fore.RESET + "Show all ssh not received identifications")
-	print(Fore.YELLOW + "\t6 - )   " + Fore.RESET + "Show all accepted public keys")
-	print(Fore.YELLOW + "\t7 - )   " + Fore.RED + "Exit")
+	print(Fore.YELLOW + Style.BRIGHT + "\t1 - )   " + Style.NORMAL + Fore.RESET + "Show all times the SSH server is up")
+	print(Fore.YELLOW + Style.BRIGHT + "\t2 - )   " + Style.NORMAL + Fore.RESET + "Show all Accepted passwords")
+	print(Fore.YELLOW + Style.BRIGHT + "\t3 - )   " + Style.NORMAL + Fore.RESET + "Show all Closed sessions")
+	print(Fore.YELLOW + Style.BRIGHT + "\t4 - )   " + Style.NORMAL + Fore.RESET + "Show all ssh failed authentications")
+	print(Fore.YELLOW + Style.BRIGHT + "\t5 - )   " + Style.NORMAL + Fore.RESET + "Show all ssh not received identifications")
+	print(Fore.YELLOW + Style.BRIGHT + "\t6 - )   " + Style.NORMAL + Fore.RESET + "Show all accepted public keys")
+	print(Fore.YELLOW + Style.BRIGHT + "\t7 - )   " + Style.NORMAL + Fore.RESET + "Show all repeated messages")
+	print(Fore.YELLOW + Style.BRIGHT + "\t8 - )   " + Style.NORMAL + Fore.RESET + "Show all possible break-in attempts")		
+	print(Fore.YELLOW + Style.BRIGHT + "\t9 - )   " + Fore.RED + "Exit")
 	print("\n")
 	option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")
 	return option
@@ -65,16 +78,7 @@ def get_log():
 	return text
 
 # This function classify relevant lines on categories
-def classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys):
-# Types of sshd lines analyzed:
-#	- [MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT].
-#	- [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2
-#	- [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER]
-#	- [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER]
-#   - [MONTH] [DAY] [TIME] [HOST] sshd: Did not receive identification string from [IP]
-#   - NEW - [MONTH] [DAY] [TIME] [HOST] sshd: Accepted publickey for [USER] from [IP] port [PORT] ssh2: [KEY]
-
-
+def classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys, repeated_messages, break_in_attempts):
 	for entry in sshd_lines:
 		if entry.find("Server listening") != -1: servers_listening.append(entry)
 		if entry.find("Accepted password") != -1: opened_sessions.append(entry)
@@ -82,6 +86,8 @@ def classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sess
 		if entry.find("pam_unix(sshd:auth): authentication failure") != -1: auth_failures.append(entry)
 		if entry.find("Did not receive identification") != -1: no_identifications.append(entry)
 		if entry.find("Accepted publickey") != -1: accepted_public_keys.append(entry)
+		if entry.find("message repeated") != -1: repeated_messages.append(entry)
+		if entry.find("POSSIBLE BREAK-IN ATTEMPT") != -1: break_in_attempts.append(entry)
 
 # This function shows local ssh daemons runned logged in /var/auth/auth.log
 def get_servers(servers_listening):
@@ -214,6 +220,62 @@ def get_accepted_public_keys(accepted_public_keys):
 		info += "\n" + output
 		print info
 
+# This function shows all repeated messages logged in /var/auth/auth.log
+def get_repeated_messages(repeated_messages):
+	''' Example auth.log line:
+	[MONTH] [DAY] [TIME] [HOST] sshd: message repeated [X] times: [ Failed password for [USER] from [IP] port [PORT] ssh2]
+	'''
+	if len(repeated_messages) > 0:
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Repeated messages have been loaded.\n")
+	else: 
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no repeated messages.\n")
+
+	for message in repeated_messages:
+		output = '\t'
+		fields = message.split(" ")
+		fields = filter(lambda x: x!='', fields) # Remove blanks
+		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+		output += 'Log date:\t' + date + "\n"
+		info = "\tRepetitions: " + str(fields[7]) + "\n\tMessage:" 
+		# Add repeated message to output
+		for x in fields[10:18]:
+			info += " " + str(x)
+
+		info += "\n" + output
+		print info
+
+# This function shows all break in attempts logged in /var/auth/auth.log
+def get_break_in_attempts(repeated_messages):
+	''' Example auth.log line:
+	[MONTH] [DAY] [TIME] [HOST] sshd: reverse mapping checking getaddrinfo for [ADDR. INFO] [IP] failed - POSSIBLE BREAK-IN ATTEMPT!
+	'''
+	if len(repeated_messages) > 0:
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Break in attempts have been loaded.\n")
+	else: 
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no break in attempts.\n")
+
+	print("\tUnfortunately this break-in attempts are a very common occurrence.")
+	print("\tIt is maybe an automated attack which is using well known usernames")
+	print("\t(as 'root' or anyone created by common apps) to try and break into")
+	print("\tyour system. The message it doesn't mean that you have been hacked")
+	print("\tjust that someone tried.\n")
+
+	raw_input("\tPress any key to continue...")
+
+	for attempt in break_in_attempts:
+		output = '\t'
+		fields = attempt.split(" ")
+		fields = filter(lambda x: x!='', fields) # Remove blanks
+		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+		output += 'Log date:\t' + date + "\n"
+		info = "\tBreak in attempt: " + str(fields[12]) + "\n\t" 
+		# Add log message to output
+		for x in fields[5:12]:
+			info += str(x) + " "
+
+		info += "\n" + output
+		print info
+
 if __name__ == "__main__":
 
 	init(autoreset = True) # Colorama autoreset to default on each print
@@ -233,7 +295,10 @@ if __name__ == "__main__":
 	auth_failures = []
 	no_identifications = []
 	accepted_public_keys = []
-	classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys)
+	repeated_messages = []
+	break_in_attempts = []
+
+	classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys, repeated_messages, break_in_attempts)
 
 	option = '0'
 	while option:
@@ -246,7 +311,9 @@ if __name__ == "__main__":
 		elif option == "4": get_auth_fails(auth_failures)
 		elif option == "5": get_no_identification(no_identifications)
 		elif option == "6": get_accepted_public_keys(accepted_public_keys)
-		elif option == "7": print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tThanks for using. Bye!\n\n\t" + Back.BLUE + "  " + Back.RESET + "\tgnrg@tuta.io\n\n"); break
+		elif option == "7": get_repeated_messages(repeated_messages)
+		elif option == "8": get_break_in_attempts(break_in_attempts)
+		elif option == "9": print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tThanks for using. Bye!\n\n\t" + Back.BLUE + "  " + Back.RESET + "\tgnrg@tuta.io\n\n"); break
 		else:
 			print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tIncorrect option. Try again!\n")
 			option = '0'

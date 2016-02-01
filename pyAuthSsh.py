@@ -88,6 +88,7 @@ def get_servers(servers_listening):
 	for server in servers_listening:
 		output = '\t'
 		fields = server.split(" ")
+		fields = filter(lambda x: x!='', fields) # Remove blanks
 		output += 'Server Host:\t' + str(fields[3])
 		output += '\n\tServer up time:\t' 
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
@@ -108,10 +109,11 @@ def get_auth_fails(auth_failures):
 	for fail in auth_failures:
 		output = '\t'
 		fields = fail.split(" ")
+		fields = filter(lambda x: x!='', fields) # Remove blanks
 		output += 'Failed attempt time:\t' 
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
 		output += date + "\n\t"
-		info = str(fields[15]) + "\t" + str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"
+		info = str(fields[14]) + "\t" + str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"
 		output += info
 		print output
 
@@ -128,6 +130,7 @@ def get_opened_sessions(opened_sessions):
 	for accepted_password in opened_sessions:
 		output = '\t'
 		fields = accepted_password.split(" ")
+		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
 		output += 'Open session date:\t' + date + "\n"
 		info = "\tUser: " + str(fields[8]) + "\tIP: " + str(fields[10]) + "\tPort:" + str(fields[12]) + "\n"
@@ -147,9 +150,10 @@ def get_closed_sessions(closed_sessions):
 	for accepted_password in closed_sessions:
 		output = '\t'
 		fields = accepted_password.split(" ")
+		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
 		output += 'Close session date:\t' + date + "\n"
-		info = "\tDisconnected by: " + str(fields[12]) + "\tIP: " + str(fields[8]) + "\n"
+		info = "\tIP: " + str(fields[8]) + "\n"
 		info += output
 		print info
 
@@ -166,6 +170,7 @@ def get_no_identification(no_identifications):
 	for identification in no_identifications:
 		output = '\t'
 		fields = identification.split(" ")
+		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
 		output += 'Log date:\t' + date + "\n"
 		info = "\tDid not receive identification string from:\t" + str(fields[11]) + "\n"

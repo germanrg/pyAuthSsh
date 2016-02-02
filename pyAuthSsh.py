@@ -81,13 +81,13 @@ def get_log():
 def classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys, repeated_messages, break_in_attempts):
 	for entry in sshd_lines:
 		if entry.find("Server listening") != -1: servers_listening.append(entry)
-		if entry.find("Accepted password") != -1: opened_sessions.append(entry)
-		if entry.find("Received disconnect") != -1: closed_sessions.append(entry)
-		if entry.find("pam_unix(sshd:auth): authentication failure") != -1: auth_failures.append(entry)
-		if entry.find("Did not receive identification") != -1: no_identifications.append(entry)
-		if entry.find("Accepted publickey") != -1: accepted_public_keys.append(entry)
-		if entry.find("message repeated") != -1: repeated_messages.append(entry)
-		if entry.find("POSSIBLE BREAK-IN ATTEMPT") != -1: break_in_attempts.append(entry)
+		elif entry.find("Accepted password") != -1: opened_sessions.append(entry)
+		elif entry.find("Received disconnect") != -1: closed_sessions.append(entry)
+		elif entry.find("pam_unix(sshd:auth): authentication failure") != -1: auth_failures.append(entry)
+		elif entry.find("Did not receive identification") != -1: no_identifications.append(entry)
+		elif entry.find("Accepted publickey") != -1: accepted_public_keys.append(entry)
+		elif entry.find("message repeated") != -1: repeated_messages.append(entry)
+		elif entry.find("POSSIBLE BREAK-IN ATTEMPT") != -1: break_in_attempts.append(entry)
 
 # This function shows local ssh daemons runned logged in /var/auth/auth.log
 def get_servers(servers_listening):
@@ -100,11 +100,9 @@ def get_servers(servers_listening):
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no servers listening.\n")
 
 	for server in servers_listening:
-		output = '\t'
 		fields = server.split(" ")
 		fields = filter(lambda x: x!='', fields) # Remove blanks
-		output += 'Server Host:\t' + str(fields[3])
-		output += '\n\tServer up time:\t' 
+		output = '\tServer Host:\t' + str(fields[3]) + '\n\tServer up time:\t' 
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
 		output += date + "\n\t"
 		output += "Listening on port: " + str(fields[10]) + "\n"
@@ -121,11 +119,10 @@ def get_opened_sessions(opened_sessions):
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no opened sessions.\n")
 
 	for accepted_password in opened_sessions:
-		output = '\t'
 		fields = accepted_password.split(" ")
 		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-		output += 'Open session date:\t' + date + "\n"
+		output = '\tOpen session date:\t' + date + "\n"
 		info = "\tUser: " + str(fields[8]) + "\tIP: " + str(fields[10]) + "\tPort:" + str(fields[12]) + "\n"
 		info += output
 		print info
@@ -141,13 +138,11 @@ def get_closed_sessions(closed_sessions):
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no closeded sessions.\n")
 
 	for accepted_password in closed_sessions:
-		output = '\t'
 		fields = accepted_password.split(" ")
 		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-		output += 'Close session date:\t' + date + "\n"
-		info = "\tIP: " + str(fields[8]) + "\n"
-		info += output
+		output = '\tClose session date:\t' + date + "\n"
+		info = "\tIP: " + str(fields[8]) + "\n" + output
 		print info
 
 # This function shows failed authentications logged in /var/auth/auth.log
@@ -161,13 +156,9 @@ def get_auth_fails(auth_failures):
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no authentication failures.\n")
 
 	for fail in auth_failures:
-		output = '\t'
-		fields = fail.split(" ")
-		
+		fields = fail.split(" ")		
 		fields = filter(lambda x: x!='', fields) # Remove blanks
-
-
-		output += 'Failed attempt time:\t' 
+		output = '\tFailed attempt time:\t' 
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
 		output += date + "\n\t"
 		if len(fields) < 15: info = "user=None\t"
@@ -187,13 +178,11 @@ def get_no_identification(no_identifications):
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no received identifications.\n")
 
 	for identification in no_identifications:
-		output = '\t'
 		fields = identification.split(" ")
 		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-		output += 'Log date:\t' + date + "\n"
-		info = "\tDid not receive identification string from:\t" + str(fields[11]) + "\n"
-		info += output
+		output = '\tLog date:\t' + date + "\n"
+		info = "\tDid not receive identification string from:\t" + str(fields[11]) + "\n" + output
 		print info
 
 # This function shows all accepted public keys logged in /var/auth/auth.log
@@ -207,11 +196,10 @@ def get_accepted_public_keys(accepted_public_keys):
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no accepted public keys.\n")
 
 	for pubkey in accepted_public_keys:
-		output = '\t'
 		fields = pubkey.split(" ")
 		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-		output += 'Log date:\t' + date + "\n"
+		output = '\tLog date:\t' + date + "\n"
 		info = "\tUser: " + str(fields[8]) + "\tIP: " + str(fields[10]) + "\tPort:" + str(fields[12]) + "\n\tKey: "
 		# Add key to output
 		for x in fields[14:]:
@@ -231,11 +219,10 @@ def get_repeated_messages(repeated_messages):
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no repeated messages.\n")
 
 	for message in repeated_messages:
-		output = '\t'
 		fields = message.split(" ")
 		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-		output += 'Log date:\t' + date + "\n"
+		output = '\tLog date:\t' + date + "\n"
 		info = "\tRepetitions: " + str(fields[7]) + "\n\tMessage:" 
 		# Add repeated message to output
 		for x in fields[10:18]:
@@ -245,11 +232,11 @@ def get_repeated_messages(repeated_messages):
 		print info
 
 # This function shows all break in attempts logged in /var/auth/auth.log
-def get_break_in_attempts(repeated_messages):
+def get_break_in_attempts(break_in_attemptse):
 	''' Example auth.log line:
 	[MONTH] [DAY] [TIME] [HOST] sshd: reverse mapping checking getaddrinfo for [ADDR. INFO] [IP] failed - POSSIBLE BREAK-IN ATTEMPT!
 	'''
-	if len(repeated_messages) > 0:
+	if len(break_in_attempts) > 0:
 		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Break in attempts have been loaded.\n")
 	else: 
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no break in attempts.\n")
@@ -265,11 +252,10 @@ def get_break_in_attempts(repeated_messages):
 	raw_input("\tPress any key to continue...")
 
 	for attempt in break_in_attempts:
-		output = '\t'
 		fields = attempt.split(" ")
 		fields = filter(lambda x: x!='', fields) # Remove blanks
 		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-		output += 'Log date:\t' + date + "\n"
+		output = '\tLog date:\t' + date + "\n"
 		info = "\tBreak in attempt: " + str(fields[12]) + "\n\t" 
 		# Add log message to output
 		for x in fields[5:12]:

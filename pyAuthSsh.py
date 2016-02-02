@@ -257,8 +257,10 @@ def get_break_in_attempts(repeated_messages):
 	print("\tUnfortunately this break-in attempts are a very common occurrence.")
 	print("\tIt is maybe an automated attack which is using well known usernames")
 	print("\t(as 'root' or anyone created by common apps) to try and break into")
-	print("\tyour system. The message it doesn't mean that you have been hacked")
+	print("\tyour system. " + Back.WHITE + Fore.BLACK + "The message it doesn't mean that you have been hacked")
 	print("\tjust that someone tried.\n")
+	print(Fore.YELLOW + "\tAnyway, if you can improve your openssh-server configuration visit:\n")
+	print(Back.BLUE + Fore.WHITE + "\t\t http://tiny.cc/p91r8x" + Back.RESET + Fore.RESET + "\n\n")
 
 	raw_input("\tPress any key to continue...")
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
  
-import os
+import os, sys
 from colorama import init, Fore, Back, Style # easy-install colorama
 
 # This script has been optimized for black/dark terminal backgrounds.
@@ -66,14 +66,60 @@ def show_menu_options():
 	option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")
 	return option
 
+# This function open, read and print information about /etc/ssh/sshd_config
+def get_sshd_config():
+	sshd_conf_text = ''
+	log_level = ''
+	syslog = ''
+	try:
+		sshd_conf_file = open("/etc/ssh/sshd_config", 'rt')
+		sshd_conf_text = sshd_conf_file.read()
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: /etc/ssh/sshd_config file has been readed correctly\n\n")
+	except IOError: 
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: /etc/ssh/sshd_config file not found!\n\n")
+		sys.exit(0)
+
+	# Detect LogLevel and SyslogFacility attributes and get it
+	for line in sshd_conf_text.split("\n"):
+		if line.find("SyslogFacility") != -1:
+			syslog = line
+		elif line.find("LogLevel") != -1:
+			log_level = line
+
+	ll = []
+	sl = []
+	for x in syslog.split(" "):
+		sl.append(x)
+	for y in log_level.split(" "):
+		ll.append(y)
+	
+	# If not detected lines raise an error.
+	if len(ll) == 0 or len(sl) == 0:
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: /etc/ssh/sshd_config hasn't got LogLevel or SyslogFacility attributes!\n\n")
+		sys.exit(0)
+
+	# Check if LogLevel is INFO and check if SyslogFacility is AUTH
+	if sl[1] != 'AUTH':
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: SSH daemon log are not in /var/log/auth.log!\n\n")
+		sys.exit(0)
+	else:
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: SSH daemon log are in /var/log/auth.log\n\n")
+	
+	if ll[1] != 'INFO':
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: Your DebugLevel is not supported by the script!\n\n")
+		print("\tYou can change the attribute DebugLevel to 'INFO' on /etc/ssh/sshd_config.")
+		sys.exit(0)
+	else:
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Your SSH DebugLevel is INFO\n\n")
+
 # This function open, read and return the content of auth.log
 def get_log():
 	try:
 		log = open(log_path, 'rt')
 		text = log.read()
-		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Log file has been readed correctly")
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: /var/log/auth.log file has been readed correctly")
 	except IOError: 
-		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: File does not appear to exist.")
+		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: /var/log/auth.log file not found!")
 	print("\n\n")
 	return text
 
@@ -269,7 +315,10 @@ if __name__ == "__main__":
 	init(autoreset = True) # Colorama autoreset to default on each print
 
 	script_header()
-	log = get_log() 
+	get_sshd_config()
+	log = get_log()
+
+	raw_input("\tAll files was loaded. Press any key to continue...")
 
 	# Collecting SSHD related entries
 	sshd_lines = []
@@ -290,6 +339,7 @@ if __name__ == "__main__":
 
 	option = '0'
 	while option:
+		script_header()
 		option = show_menu_options()
 		script_header()
 		# Process selected option

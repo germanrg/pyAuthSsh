@@ -135,6 +135,18 @@ def classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sess
 		elif entry.find("message repeated") != -1: repeated_messages.append(entry)
 		elif entry.find("POSSIBLE BREAK-IN ATTEMPT") != -1: break_in_attempts.append(entry)
 
+def log_preview(servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys, repeated_messages, break_in_attempts):
+	script_header()
+	print "\tServers listening:\t\t" + str(len(servers_listening))
+	print "\tOpened sessions:\t\t" + str(len(opened_sessions))
+	print "\tClosed sessions:\t\t" + str(len(closed_sessions))
+	print "\tAuthentication failures:\t" + str(len(auth_failures))
+	print "\tNo identifications:\t\t" + str(len(no_identifications))
+	print "\tAccepted Public Keys:\t\t" + str(len(accepted_public_keys))
+	print "\tRepeated Messages:\t\t" + str(len(repeated_messages))
+	print "\tBreak in attempts:\t\t" + str(len(break_in_attempts)) + "\n\n"
+	raw_input("\tPress any key to continue...")
+
 # This function shows local ssh daemons runned logged in /var/auth/auth.log
 def get_servers(servers_listening):
 	''' Example auth.log line:
@@ -145,6 +157,15 @@ def get_servers(servers_listening):
 	else: 
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no servers listening.\n")
 
+    """print(Fore.YELLOW + Style.BRIGHT + "\t1 - )   " + Style.NORMAL + Fore.RESET + "Show entries one by one")
+	print(Fore.YELLOW + Style.BRIGHT + "\t2 - )   " + Style.NORMAL + Fore.RESET + "Show all entries")
+	print(Fore.YELLOW + Style.BRIGHT + "\t3 - )   " + Style.NORMAL + Fore.RESET + "Show all entries and save as a text file")
+	print(Fore.YELLOW + Style.BRIGHT + "\t4 - )   " + Style.NORMAL + Fore.RESET + "Don't show anything but save as a text file")		
+	print(Fore.YELLOW + Style.BRIGHT + "\t9 - )   " + Fore.RED + "Back to main menu")
+	print("\n")
+	option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")"""
+	
+
 	for server in servers_listening:
 		fields = server.split(" ")
 		fields = filter(lambda x: x!='', fields) # Remove blanks
@@ -153,6 +174,8 @@ def get_servers(servers_listening):
 		output += date + "\n\t"
 		output += "Listening on port: " + str(fields[10]) + "\n"
 		print output
+
+	raw_input("\tPress any key to continue...")
 
 # This function shows opened sessions logged in /var/auth/auth.log
 def get_opened_sessions(opened_sessions):
@@ -336,6 +359,7 @@ if __name__ == "__main__":
 	break_in_attempts = []
 
 	classify_entries(sshd_lines, servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys, repeated_messages, break_in_attempts)
+	log_preview(servers_listening, opened_sessions, closed_sessions, auth_failures, no_identifications, accepted_public_keys, repeated_messages, break_in_attempts)
 
 	option = '0'
 	while option:

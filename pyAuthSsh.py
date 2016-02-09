@@ -152,30 +152,65 @@ def get_servers(servers_listening):
 	''' Example auth.log line:
 	[MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT].
 	'''
-	if len(servers_listening) > 0:
-		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Servers listening have been loaded.\n")
-	else: 
+	if len(servers_listening) == 0:
 		print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no servers listening.\n")
+		raw_input("\tPress any key to continue...")
+	else: 
+		print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Servers listening have been loaded.\n")
 
-    """print(Fore.YELLOW + Style.BRIGHT + "\t1 - )   " + Style.NORMAL + Fore.RESET + "Show entries one by one")
-	print(Fore.YELLOW + Style.BRIGHT + "\t2 - )   " + Style.NORMAL + Fore.RESET + "Show all entries")
-	print(Fore.YELLOW + Style.BRIGHT + "\t3 - )   " + Style.NORMAL + Fore.RESET + "Show all entries and save as a text file")
-	print(Fore.YELLOW + Style.BRIGHT + "\t4 - )   " + Style.NORMAL + Fore.RESET + "Don't show anything but save as a text file")		
-	print(Fore.YELLOW + Style.BRIGHT + "\t9 - )   " + Fore.RED + "Back to main menu")
-	print("\n")
-	option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")"""
-	
+		option = '0'
 
-	for server in servers_listening:
-		fields = server.split(" ")
-		fields = filter(lambda x: x!='', fields) # Remove blanks
-		output = '\tServer Host:\t' + str(fields[3]) + '\n\tServer up time:\t' 
-		date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-		output += date + "\n\t"
-		output += "Listening on port: " + str(fields[10]) + "\n"
-		print output
+		while option:
+			show = True
+			one_by_one = False
+			text_file = False
+			print(Fore.YELLOW + Style.BRIGHT + "\t1 - )   " + Style.NORMAL + Fore.RESET + "Show entries one by one")
+			print(Fore.YELLOW + Style.BRIGHT + "\t2 - )   " + Style.NORMAL + Fore.RESET + "Show entries one by one and save as a text file")
+			print(Fore.YELLOW + Style.BRIGHT + "\t3 - )   " + Style.NORMAL + Fore.RESET + "Show all entries")
+			print(Fore.YELLOW + Style.BRIGHT + "\t4 - )   " + Style.NORMAL + Fore.RESET + "Show all entries and save as a text file")
+			print(Fore.YELLOW + Style.BRIGHT + "\t5 - )   " + Style.NORMAL + Fore.RESET + "Don't show anything but save as a text file")		
+			print(Fore.YELLOW + Style.BRIGHT + "\t6 - )   " + Fore.RED + "Back to main menu")
+			print("\n")
+		
+			option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")
+			print("\n")
+		
+			# Process selected option
+			if option == "1": 
+				one_by_one = True
+			elif option == "2": 
+				one_by_one = True
+				text_file = True
+			elif option == "3": 
+				pass
+			elif option == "4":
+				text_file = True
+			elif option == "5":
+				show = False
+				text_file = True
+			elif option == "6": 
+				show = False
+				option = ''
+			else:
+				print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tIncorrect option. Try again!\n\n")
+				show = False
+				option = '0'
 
-	raw_input("\tPress any key to continue...")
+			text_to_file = ''
+			for server in servers_listening:
+				fields = server.split(" ")
+				fields = filter(lambda x: x!='', fields) # Remove blanks
+				output = '\tServer Host:\t' + str(fields[3]) + '\n\tServer up time:\t' 
+				date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+				output += date + "\n\t"
+				output += "Listening on port: " + str(fields[10]) + "\n"
+				text_to_file += output + '\n'
+				if show: print output
+				if one_by_one: raw_input("\n\tPress any key to continue...\n")
+
+			if text_file: 
+				# Open and write file process
+				raw_input("\tPress any key to continue...")
 
 # This function shows opened sessions logged in /var/auth/auth.log
 def get_opened_sessions(opened_sessions):

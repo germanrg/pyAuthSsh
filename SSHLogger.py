@@ -252,7 +252,34 @@ class SSHLogger:
                 raw_input("\n\tPress enter to continue...\n")
 
     def get_no_identifications(self, save_as = ''):
-        return self.no_identifications
+        ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Did not receive identification string from [IP] '''
+        if len(self.no_identifications) == 0:
+            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no received identifications.\n")
+            raw_input("\tPress enter to continue...")
+        else: 
+            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: No received identifications have been loaded.\n")
+
+            show = True 
+            one_by_one = False
+            text_file = False
+            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
+
+            text_to_file = ''
+            for identification in self.no_identifications:
+                fields = identification.split(" ")
+                fields = filter(lambda x: x!='', fields) # Remove blanks
+                date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+                output = '\tLog date:\t' + date + "\n"
+                info = "\tDid not receive identification string from:\t" + str(fields[11]) + "\n" + output
+                text_to_file += output
+                if show: print info
+                if one_by_one: raw_input("\n\tPress enter to continue...\n")
+            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
+            # Save output in text file
+            if text_file:
+                if show: raw_input("\n\tPress enter to continue...\n")
+                self.create_file(text_to_file)
+                raw_input("\n\tPress enter to continue...\n")
 
     def get_accepted_public_keys(self, save_as = ''):
         return self.accepted_public_keys

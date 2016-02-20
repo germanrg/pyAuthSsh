@@ -54,7 +54,7 @@ if __name__ == "__main__":
         elif option == "2": logger.get_opened_sessions()
         elif option == "3": logger.get_closed_sessions()
         elif option == "4": logger.get_auth_failures()
-        elif option == "5": get_no_identification(no_identifications)
+        elif option == "5": logger.get_no_identifications()
         elif option == "6": get_accepted_public_keys(accepted_public_keys)
         elif option == "7": get_repeated_messages(repeated_messages)
         elif option == "8": get_break_in_attempts(break_in_attempts)

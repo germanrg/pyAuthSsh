@@ -56,21 +56,21 @@ class SSHLogger:
         self.break_in_attempts = []
 
         self.__classify__()
+        self.__get_preview__()
     def __check_sshd__(self):
         try:
             self.sshd_file = open(self.sshd_path, 'rt')
             self.sshd_text = self.sshd_file.read()
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: /etc/ssh/sshd_config file has been readed correctly\n\n")
+            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: /etc/ssh/sshd_config file has been readed correctly\n")
         except IOError:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: /etc/ssh/sshd_config file not found!\n\n")
+            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: /etc/ssh/sshd_config file not found!\n")
     def __check_log__(self):
         try:
             self.log_file = open(self.log_path, 'rt')
             self.log_text = self.log_file.read()
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: " + self.log_path + " file has been readed correctly")
+            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: " + self.log_path + " file has been readed correctly\n")
         except IOError: 
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: " + self.log_path + " file not found!")
-        print("\n\n")
+            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: " + self.log_path + " file not found!\n")
     def __classify__(self):
         log_lines = []
         for line in self.log_text.split("\n"):
@@ -86,8 +86,7 @@ class SSHLogger:
             elif entry.find("Accepted publickey") != -1: self.accepted_public_keys.append(entry)
             elif entry.find("message repeated") != -1: self.repeated_messages.append(entry)
             elif entry.find("POSSIBLE BREAK-IN ATTEMPT") != -1: self.break_in_attempts.append(entry)
-
-    def get_preview(self):
+    def __get_preview__(self):
         preview = "\tServers listening:\t\t" + str(len(self.servers_listening)) + "\n"
         preview += "\tOpened sessions:\t\t" + str(len(self.opened_sessions)) + "\n"
         preview += "\tClosed sessions:\t\t" + str(len(self.closed_sessions)) + "\n"
@@ -95,10 +94,10 @@ class SSHLogger:
         preview += "\tNo identifications:\t\t" + str(len(self.no_identifications)) + "\n"
         preview += "\tAccepted Public Keys:\t\t" + str(len(self.accepted_public_keys)) + "\n"
         preview += "\tRepeated Messages:\t\t" + str(len(self.repeated_messages)) + "\n"
-        preview += "\tBreak in attempts:\t\t" + str(len(self.break_in_attempts)) + "\n\n"
-        return preview
+        preview += "\tBreak in attempts:\t\t" + str(len(self.break_in_attempts)) + "\n"
+        print preview
+
     def create_file(self, text):
-        script_header()
         new_name = raw_input("\n\tEnter the output filename: ")
         new_path = raw_input("\n\tEnter complete path for output file without filename: ")
         if os.path.isdir(new_path):
@@ -218,7 +217,6 @@ class SSHLogger:
                 if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
                 raw_input("\n\tPress enter to continue...\n")
-
     def get_auth_failures(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER] '''
         if len(self.auth_failures) == 0:
@@ -266,35 +264,6 @@ class SSHLogger:
         # Save a new log file
         #pass
 
-# This function shows the script header
-def script_header():
-    os.system("clear")
-    print(Back.WHITE + Style.BRIGHT + "                                                                              ")
-    print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                          " + Back.WHITE + Style.BRIGHT + "  ")
-    print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                          " + Back.WHITE + Style.BRIGHT + "  ")
-    print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.RED + "                               pyAuthSsh.py                               " + Back.WHITE + Style.BRIGHT + "  ")
-    print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.YELLOW + "                               -._.-**-._.-                               " + Back.WHITE + Style.BRIGHT + "  ")
-    print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + Fore.GREEN + "                               by gNrg 2016                               " + Back.WHITE + Style.BRIGHT + "  ")
-    print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                          " + Back.WHITE + Style.BRIGHT + "  ")
-    print(Back.WHITE + Style.BRIGHT + "  " + Back.RESET + "                                                                          " + Back.WHITE + Style.BRIGHT + "  ")
-    print(Back.WHITE + Style.BRIGHT + "                                                                              ")
-    print("\n")
-
-# This function shows menu options
-def show_menu_options():
-    print(Fore.YELLOW + Style.BRIGHT + "\t1 - )   " + Style.NORMAL + Fore.RESET + "Show all times the SSH server is up")
-    print(Fore.YELLOW + Style.BRIGHT + "\t2 - )   " + Style.NORMAL + Fore.RESET + "Show all Accepted passwords")
-    print(Fore.YELLOW + Style.BRIGHT + "\t3 - )   " + Style.NORMAL + Fore.RESET + "Show all Closed sessions")
-    print(Fore.YELLOW + Style.BRIGHT + "\t4 - )   " + Style.NORMAL + Fore.RESET + "Show all ssh failed authentications")
-    print(Fore.YELLOW + Style.BRIGHT + "\t5 - )   " + Style.NORMAL + Fore.RESET + "Show all ssh not received identifications")
-    print(Fore.YELLOW + Style.BRIGHT + "\t6 - )   " + Style.NORMAL + Fore.RESET + "Show all accepted public keys")
-    print(Fore.YELLOW + Style.BRIGHT + "\t7 - )   " + Style.NORMAL + Fore.RESET + "Show all repeated messages")
-    print(Fore.YELLOW + Style.BRIGHT + "\t8 - )   " + Style.NORMAL + Fore.RESET + "Show all possible break-in attempts")        
-    print(Fore.YELLOW + Style.BRIGHT + "\t9 - )   " + Fore.RED + "Exit")
-    print("\n")
-    option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")
-    return option
-
 # This function shows entry options
 def entries_menu(show, one_by_one, text_file):
     option = '0'
@@ -330,29 +299,3 @@ def entries_menu(show, one_by_one, text_file):
             option = '0'
         if option != '0': option = ''
     return(show, one_by_one, text_file)
-
-if __name__ == "__main__":
-
-    init(autoreset = True) # Colorama autoreset to default on each print
-
-    script_header()
-    logger = SSHLogger()
-    raw_input("\tAll files was loaded. Press enter to continue...")
-    option = '0'
-    while option:
-        script_header()
-        option = show_menu_options()
-        script_header()
-        # Process selected option
-        if option == "1": logger.get_servers()
-        elif option == "2": logger.get_opened_sessions()
-        elif option == "3": logger.get_closed_sessions()
-        elif option == "4": logger.get_auth_failures()
-        elif option == "5": get_no_identification(no_identifications)
-        elif option == "6": get_accepted_public_keys(accepted_public_keys)
-        elif option == "7": get_repeated_messages(repeated_messages)
-        elif option == "8": get_break_in_attempts(break_in_attempts)
-        elif option == "9": print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tThanks for using. Bye!\n\n\t" + Back.BLUE + "  " + Back.RESET + "\tgnrg@tuta.io\n\n"); break
-        else:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tIncorrect option. Try again!\n")
-            option = '0'

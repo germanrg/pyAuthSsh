@@ -78,10 +78,10 @@ if __name__ == "__main__":
 
     script_header()
     logger = SSHLogger()
-    raw_input("\tAll files was loaded. Press enter to continue...")
+    raw_input("\tPress enter to continue...")
     option = '0'
     while option:
-        script_header()
+        if option != '-1': script_header()
         option = show_menu_options()
         script_header()
         # Process selected option
@@ -96,4 +96,4 @@ if __name__ == "__main__":
         elif option == "9": print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tThanks for using. Bye!\n\n\t" + Back.BLUE + "  " + Back.RESET + "\tgnrg@tuta.io\n\n"); break
         else:
             print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tIncorrect option. Try again!\n")
-            option = '0'
+            option = '-1'

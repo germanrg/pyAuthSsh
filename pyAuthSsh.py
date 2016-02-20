@@ -56,7 +56,7 @@ if __name__ == "__main__":
         elif option == "4": logger.get_auth_failures()
         elif option == "5": logger.get_no_identifications()
         elif option == "6": logger.get_accepted_public_keys()
-        elif option == "7": get_repeated_messages(repeated_messages)
+        elif option == "7": logger.get_repeated_messages()
         elif option == "8": logger.get_break_in_attempts()
         elif option == "9": print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tThanks for using. Bye!\n\n\t" + Back.BLUE + "  " + Back.RESET + "\tgnrg@tuta.io\n\n"); break
         else:

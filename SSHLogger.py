@@ -311,6 +311,39 @@ class SSHLogger:
                 if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
                 raw_input("\n\tPress enter to continue...\n")
+    def get_repeated_messages(self, save_as = ''):
+        ''' Example auth.log line:[MONTH] [DAY] [TIME] [HOST] sshd: message repeated [X] times: [ Failed password for [USER] from [IP] port [PORT] ssh2] '''
+        if len(self.repeated_messages) == 0:
+            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no repeated messages.\n")
+            raw_input("\tPress enter to continue...")
+        else: 
+            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Repeated messages have been loaded.\n")
+
+            show = True 
+            one_by_one = False
+            text_file = False
+            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
+
+            text_to_file = ''
+            for message in self.repeated_messages:
+                fields = message.split(" ")
+                fields = filter(lambda x: x!='', fields) # Remove blanks
+                date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+                output = '\tLog date:\t' + date + "\n"
+                info = "\tRepetitions: " + str(fields[7]) + "\n\tMessage:" 
+                # Add repeated message to output
+                for x in fields[10:18]:
+                    info += " " + str(x)
+                info += "\n" + output
+                text_to_file += info
+                if show: print info
+                if one_by_one: raw_input("\n\tPress enter to continue...\n")
+            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
+            # Save output in text file
+            if text_file:
+                if show: raw_input("\n\tPress enter to continue...\n")
+                self.create_file(text_to_file)
+                raw_input("\n\tPress enter to continue...\n")
     def get_break_in_attempts(self, save_as = ''):
         ''' Example auth.log line:[MONTH] [DAY] [TIME] [HOST] sshd: reverse mapping checking getaddrinfo for [ADDR. INFO] [IP] failed - POSSIBLE BREAK-IN ATTEMPT! '''
         if len(self.break_in_attempts) == 0:
@@ -329,6 +362,12 @@ class SSHLogger:
 
             raw_input("\tPress any key to continue...")
 
+            show = True 
+            one_by_one = False
+            text_file = False
+            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
+
+            text_to_file = ''
             for attempt in self.break_in_attempts:
                 fields = attempt.split(" ")
                 fields = filter(lambda x: x!='', fields) # Remove blanks
@@ -348,6 +387,7 @@ class SSHLogger:
                 if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
                 raw_input("\n\tPress enter to continue...\n")
+    
 
     #def save_log_as(self, log = self.lo, new_path):
         # Save a new log file

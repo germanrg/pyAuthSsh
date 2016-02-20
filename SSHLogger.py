@@ -17,8 +17,7 @@ months = {"Jan" : 1,
           "Sep" : 9,
           "Oct" : 10,
           "Nov" : 11,
-          "Dec" : 12,
-}
+          "Dec" : 12,}
 
 class SSHLogger:
     """ SSH Logging Manager:
@@ -250,7 +249,6 @@ class SSHLogger:
                 if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
                 raw_input("\n\tPress enter to continue...\n")
-
     def get_no_identifications(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Did not receive identification string from [IP] '''
         if len(self.no_identifications) == 0:
@@ -280,12 +278,76 @@ class SSHLogger:
                 if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
                 raw_input("\n\tPress enter to continue...\n")
-
     def get_accepted_public_keys(self, save_as = ''):
-        return self.accepted_public_keys
+        ''' Example auth.log line:[MONTH] [DAY] [TIME] [HOST] sshd: Accepted publickey for [USER] from [IP] port [PORT] ssh2: [KEY] '''
+        if len(self.accepted_public_keys) == 0:
+            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no accepted public keys.\n")
+            raw_input("\tPress enter to continue...")
+        else: 
+            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Accepted public keys have been loaded.\n")        
 
+            show = True 
+            one_by_one = False
+            text_file = False
+            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
+
+            text_to_file = ''
+            for pubkey in self.accepted_public_keys:
+                fields = pubkey.split(" ")
+                fields = filter(lambda x: x!='', fields) # Remove blanks
+                date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+                output = '\tLog date:\t' + date + "\n"
+                info = "\tUser: " + str(fields[8]) + "\tIP: " + str(fields[10]) + "\tPort:" + str(fields[12]) + "\n\tKey: "
+                # Add key to output
+                for x in fields[14:]:
+                    info += str(x)
+                info += "\n" + output
+                text_to_file += info
+                if show: print info
+                if one_by_one: raw_input("\n\tPress enter to continue...\n")
+            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
+            # Save output in text file
+            if text_file:
+                if show: raw_input("\n\tPress enter to continue...\n")
+                self.create_file(text_to_file)
+                raw_input("\n\tPress enter to continue...\n")
     def get_break_in_attempts(self, save_as = ''):
-        return self.break_in_attempts
+        ''' Example auth.log line:[MONTH] [DAY] [TIME] [HOST] sshd: reverse mapping checking getaddrinfo for [ADDR. INFO] [IP] failed - POSSIBLE BREAK-IN ATTEMPT! '''
+        if len(self.break_in_attempts) == 0:
+            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no break in attempts.\n")
+            raw_input("\tPress enter to continue...")
+        else: 
+            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Break in attempts have been loaded.\n")            
+
+            print("\tUnfortunately this break-in attempts are a very common occurrence.")
+            print("\tIt is maybe an automated attack which is using well known usernames")
+            print("\t(as 'root' or anyone created by common apps) to try and break into")
+            print("\tyour system. " + Back.WHITE + Fore.BLACK + "The message it doesn't mean that you have been hacked")
+            print("\tjust that someone tried.\n")
+            print(Fore.YELLOW + "\tAnyway, if you can improve your openssh-server configuration visit:\n")
+            print(Back.BLUE + Fore.WHITE + "\t\t http://tiny.cc/p91r8x" + Back.RESET + Fore.RESET + "\n\n")
+
+            raw_input("\tPress any key to continue...")
+
+            for attempt in self.break_in_attempts:
+                fields = attempt.split(" ")
+                fields = filter(lambda x: x!='', fields) # Remove blanks
+                date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+                output = '\tLog date:\t' + date + "\n"
+                info = "\tBreak in attempt: " + str(fields[12]) + "\n\t" 
+                # Add log message to output
+                for x in fields[5:12]:
+                    info += str(x) + " "
+                info += "\n" + output
+                text_to_file += info
+                if show: print info
+                if one_by_one: raw_input("\n\tPress enter to continue...\n")
+            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
+            # Save output in text file
+            if text_file:
+                if show: raw_input("\n\tPress enter to continue...\n")
+                self.create_file(text_to_file)
+                raw_input("\n\tPress enter to continue...\n")
 
     #def save_log_as(self, log = self.lo, new_path):
         # Save a new log file

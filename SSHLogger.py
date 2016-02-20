@@ -129,6 +129,7 @@ class SSHLogger:
         else: return ll[1] # Optimized for 'INFO' level
 
     def get_servers(self, save_as = ''):
+        ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT]. '''
         if len(self.servers_listening) == 0:
             print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no servers listening.\n")
             raw_input("\tPress enter to continue...")
@@ -157,7 +158,7 @@ class SSHLogger:
             if text_file:
                 if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
-                if option != '': raw_input("\n\tPress enter to continue...\n")
+                raw_input("\n\tPress enter to continue...\n")
     def get_opened_sessions(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2'''
         if len(self.opened_sessions) == 0:
@@ -182,18 +183,75 @@ class SSHLogger:
                 text_to_file += info + '\n'
                 if show: print info
                 if one_by_one: raw_input("\n\tPress enter to continue...\n")
-            if not one_by_one: raw_input("\n\tPress enter to continue...\n")
+            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
             # Save output in text file
             if text_file:
                 if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
-                if option != '': raw_input("\n\tPress enter to continue...\n")
-
+                raw_input("\n\tPress enter to continue...\n")
     def get_closed_sessions(self, save_as = ''):
-        return self.closed_sessions
+        ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER] '''
+        if len(self.closed_sessions) == 0:
+            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no closeded sessions.\n")
+            raw_input("\tPress enter to continue...")            
+        else: 
+            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Closed sessions have been loaded.\n")
+            
+            show = True
+            one_by_one = False
+            text_file = False
+            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
+
+            text_to_file = ''
+            for accepted_password in self.closed_sessions:
+                fields = accepted_password.split(" ")
+                fields = filter(lambda x: x!='', fields) # Remove blanks
+                date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+                output = '\tClose session date:\t' + date + "\n"
+                info = "\tIP: " + str(fields[8]) + "\n" + output
+                text_to_file += info + '\n'
+                if show: print info
+                if one_by_one: raw_input("\n\tPress enter to continue...\n")
+            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
+            # Save output in text file
+            if text_file:
+                if show: raw_input("\n\tPress enter to continue...\n")
+                self.create_file(text_to_file)
+                raw_input("\n\tPress enter to continue...\n")
 
     def get_auth_failures(self, save_as = ''):
-        return self.auth_failures
+        ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER] '''
+        if len(self.auth_failures) == 0:
+            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no authentication failures.\n")
+            raw_input("\tPress enter to continue...")
+        else: 
+            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: authentication failures have been loaded.\n")            
+
+            show = True
+            one_by_one = False
+            text_file = False
+            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
+
+            text_to_file = ''
+            for fail in self.auth_failures:
+                fields = fail.split(" ")        
+                fields = filter(lambda x: x!='', fields) # Remove blanks
+                output = '\tFailed attempt time:\t' 
+                date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
+                output += date + "\n\t"
+                if len(fields) < 15: info = "user=None\t"
+                else: info = str(fields[14]) + "\t"
+                info += str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"
+                output += info
+                text_to_file += output
+                if show: print info
+                if one_by_one: raw_input("\n\tPress enter to continue...\n")
+            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
+            # Save output in text file
+            if text_file:
+                if show: raw_input("\n\tPress enter to continue...\n")
+                self.create_file(text_to_file)
+                raw_input("\n\tPress enter to continue...\n")
 
     def get_no_identifications(self, save_as = ''):
         return self.no_identifications
@@ -288,8 +346,8 @@ if __name__ == "__main__":
         # Process selected option
         if option == "1": logger.get_servers()
         elif option == "2": logger.get_opened_sessions()
-        elif option == "3": get_closed_sessions(closed_sessions)
-        elif option == "4": get_auth_fails(auth_failures)
+        elif option == "3": logger.get_closed_sessions()
+        elif option == "4": logger.get_auth_failures()
         elif option == "5": get_no_identification(no_identifications)
         elif option == "6": get_accepted_public_keys(accepted_public_keys)
         elif option == "7": get_repeated_messages(repeated_messages)

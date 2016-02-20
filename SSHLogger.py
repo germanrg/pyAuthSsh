@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# gnrg(at)tuta.io
+#
 
 from colorama import init, Fore, Back, Style # easy-install colorama
 import os
@@ -155,7 +158,6 @@ class SSHLogger:
             if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
             # Save output in text file
             if text_file:
-                if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
                 raw_input("\n\tPress enter to continue...\n")
     def get_opened_sessions(self, save_as = ''):
@@ -185,7 +187,6 @@ class SSHLogger:
             if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
             # Save output in text file
             if text_file:
-                if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
                 raw_input("\n\tPress enter to continue...\n")
     def get_closed_sessions(self, save_as = ''):
@@ -214,7 +215,6 @@ class SSHLogger:
             if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
             # Save output in text file
             if text_file:
-                if show: raw_input("\n\tPress enter to continue...\n")
                 self.create_file(text_to_file)
                 raw_input("\n\tPress enter to continue...\n")
     def get_auth_failures(self, save_as = ''):

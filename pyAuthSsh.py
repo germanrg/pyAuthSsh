@@ -36,41 +36,6 @@ def show_menu_options():
     option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")
     return option
 
-# This function shows entry options
-def entries_menu(show, one_by_one, text_file):
-    option = '0'
-    while option:
-        print(Fore.YELLOW + Style.BRIGHT + "\t1 - )   " + Style.NORMAL + Fore.RESET + "Show entries one by one")
-        print(Fore.YELLOW + Style.BRIGHT + "\t2 - )   " + Style.NORMAL + Fore.RESET + "Show entries one by one and save as a text file")
-        print(Fore.YELLOW + Style.BRIGHT + "\t3 - )   " + Style.NORMAL + Fore.RESET + "Show all entries")
-        print(Fore.YELLOW + Style.BRIGHT + "\t4 - )   " + Style.NORMAL + Fore.RESET + "Show all entries and save as a text file")
-        print(Fore.YELLOW + Style.BRIGHT + "\t5 - )   " + Style.NORMAL + Fore.RESET + "Don't show anything but save as a text file")        
-        print(Fore.YELLOW + Style.BRIGHT + "\t6 - )   " + Fore.RED + "Back to main menu")
-        print("\n")          
-        option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")
-        print("\n")        
-        # Process selected option
-        if option == "1": 
-            one_by_one = True
-        elif option == "2": 
-            one_by_one = True
-            text_file = True
-        elif option == "3": 
-            pass
-        elif option == "4":
-            text_file = True
-        elif option == "5":
-            show = False
-            text_file = True
-        elif option == "6": 
-            show = False
-            option = ''
-        else:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tIncorrect option. Try again!\n\n")
-            show = False
-            option = '0'
-        if option != '0': option = ''
-    return(show, one_by_one, text_file)
 
 if __name__ == "__main__":
 

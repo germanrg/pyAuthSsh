@@ -89,16 +89,14 @@ class SSHLogger:
             elif entry.find("message repeated") != -1: self.repeated_messages.append(entry)
             elif entry.find("POSSIBLE BREAK-IN ATTEMPT") != -1: self.break_in_attempts.append(entry)
     def __get_preview__(self):
-        preview = "\tServers listening:\t\t" + str(len(self.servers_listening)) + "\n"
-        preview += "\tOpened sessions:\t\t" + str(len(self.opened_sessions)) + "\n"
-        preview += "\tClosed sessions:\t\t" + str(len(self.closed_sessions)) + "\n"
-        preview += "\tAuthentication failures:\t" + str(len(self.auth_failures)) + "\n"
-        preview += "\tNo identifications:\t\t" + str(len(self.no_identifications)) + "\n"
-        preview += "\tAccepted Public Keys:\t\t" + str(len(self.accepted_public_keys)) + "\n"
-        preview += "\tRepeated Messages:\t\t" + str(len(self.repeated_messages)) + "\n"
-        preview += "\tBreak in attempts:\t\t" + str(len(self.break_in_attempts)) + "\n"
-        print preview
-
+        print Fore.YELLOW + "\tServers listening:\t\t" + Fore.GREEN + str(len(self.servers_listening))
+        print Fore.YELLOW + "\tOpened sessions:\t\t" + Fore.GREEN + str(len(self.opened_sessions))
+        print Fore.YELLOW + "\tClosed sessions:\t\t" + Fore.GREEN + str(len(self.closed_sessions))
+        print Fore.YELLOW + "\tAuthentication failures:\t" + Fore.RED + str(len(self.auth_failures))
+        print Fore.YELLOW + "\tNo identifications:\t\t" + Fore.RED + str(len(self.no_identifications))
+        print Fore.YELLOW + "\tAccepted Public Keys:\t\t" + Fore.GREEN + str(len(self.accepted_public_keys))
+        print Fore.YELLOW + "\tRepeated Messages:\t\t" + Fore.RED + str(len(self.repeated_messages))
+        print Fore.YELLOW + "\tBreak in attempts:\t\t" + Fore.RED + str(len(self.break_in_attempts)) + "\n"
     def create_file(self, text):
         new_name = raw_input("\n\tEnter the output filename: ")
         new_path = raw_input("\n\tEnter complete path for output file without filename: ")
@@ -177,7 +175,7 @@ class SSHLogger:
                 fields = accepted_password.split(" ")
                 fields = filter(lambda x: x!='', fields) # Remove blanks
                 date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-                output = '\tOpen session date:\t' + date + "\n"
+                output = '\tOpen session date: ' + date + "\n"
                 info = "\tUser: " + str(fields[8]) + "\tIP: " + str(fields[10]) + "\tPort:" + str(fields[12]) + "\n"
                 info += output
                 text_to_file += info + '\n'

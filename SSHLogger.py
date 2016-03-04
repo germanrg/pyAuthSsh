@@ -236,10 +236,10 @@ class SSHLogger:
                 output += date + "\n\t"
                 if len(fields) < 15: info = "user=None\t"
                 else: info = str(fields[14]) + "\t"
-                info += str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"
+                info += str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t\n\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"
                 output += info
                 text_to_file += output
-                if show: print info
+                if show: print output
                 if one_by_one: raw_input("\n\tPress enter to continue...\n")
             if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
             # Save output in text file

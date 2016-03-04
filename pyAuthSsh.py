@@ -42,7 +42,7 @@ if __name__ == "__main__":
     init(autoreset = True) # Colorama autoreset to default on each print
 
     script_header()
-    logger = SSHLogger()
+    logger = SSHLogger('/var/log/auth.log', '/etc/ssh/sshd_config')
     raw_input("\tPress enter to continue...")
     option = '0'
     while option:

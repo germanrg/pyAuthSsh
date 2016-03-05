@@ -8,7 +8,7 @@ from colorama import init, Fore, Back, Style # easy-install colorama
 from SSHLogger import *
 
 desc = """Description of %prog. gNrg."""
-version='%prog v 0.1'
+version='%prog V0.1'
 usage = "usage: %prog [-hspcfnkrb] [-o|-d] [-l <file>]"
 
 # This function shows the script header
@@ -44,41 +44,47 @@ if __name__ == "__main__":
     init(autoreset = True) # Colorama autoreset to default on each print
 
     parser = optparse.OptionParser(description = desc, version = version, usage = usage)
-    parser.add_option("-s", "--server-up", action="store_true",
+    ssh_opts = optparse.OptionGroup(parser, 'SSH Options')
+    display_opts = optparse.OptionGroup(parser, 'Display Options')
+    file_opts = optparse.OptionGroup(parser, 'File Options')
+
+    ssh_opts.add_option("-s", "--server-up", action="store_true",
                         dest="servers_flag", default=False,
                         help="Show all times the SSH server has been launched")
-    parser.add_option("-p", "--acc-passwords", action="store_true",
+    ssh_opts.add_option("-p", "--acc-passwords", action="store_true",
                         dest="accepted_pass_flag", default=False,
                         help="Show accepted passwords")
-    parser.add_option("-c", "--closed-sessions", action="store_true",
+    ssh_opts.add_option("-c", "--closed-sessions", action="store_true",
                         dest="closed_sessions_flag", default=False,
                         help="Show closed sessions")
-    parser.add_option("-f", "--failed-auth", action="store_true",
+    ssh_opts.add_option("-f", "--failed-auth", action="store_true",
                         dest="failed_auth_flag", default=False,
                         help="Show failed authentications")
-    parser.add_option("-n", "--no-idents", action="store_true",
+    ssh_opts.add_option("-n", "--no-idents", action="store_true",
                         dest="no_ident_flag", default=False,
                         help="Show SSH no received identifications")
-    parser.add_option("-k", "--public-keys", action="store_true",
+    ssh_opts.add_option("-k", "--public-keys", action="store_true",
                         dest="keys_flag", default=False,
                         help="Show accepted public keys")
-    parser.add_option("-r", "--repeat", action="store_true",
+    ssh_opts.add_option("-r", "--repeat", action="store_true",
                         dest="repeat_flag", default=False,
                         help="Show repeated messages")
-    parser.add_option("-b", "--break-in", action="store_true",
+    ssh_opts.add_option("-b", "--break-in", action="store_true",
                         dest="breaks_flag", default=False,
                         help="Show break-in attempts")
-
-    parser.add_option("-o", "--one-by-one", action="store_true",
+    display_opts.add_option("-o", "--one-by-one", action="store_true",
                         dest="one_flag", default=False,
                         help="Display entries one by one")
-    parser.add_option("-d", "--no-display", action="store_true",
+    display_opts.add_option("-d", "--no-display", action="store_true",
                         dest="no_display_flag", default=False,
                         help="No display information in <stdout>")
-
-    parser.add_option("-l", "--log", dest="log_file",
+    file_opts.add_option("-l", "--log", dest="log_file",
                         default="", type="string", metavar='<FILE>', 
                         help="Save output in a log file")
+
+    parser.add_option_group(ssh_opts)
+    parser.add_option_group(display_opts)
+    parser.add_option_group(file_opts)
 
     (opts, args) = parser.parse_args()
 

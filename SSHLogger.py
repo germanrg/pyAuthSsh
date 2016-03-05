@@ -3,7 +3,6 @@
 # gnrg(at)tuta.io
 #
 
-from colorama import init, Fore, Back, Style # easy-install colorama
 import os
 
 months = {"Jan" : 1,
@@ -39,9 +38,6 @@ class SSHLogger:
     save_path = ''
 
     def __init__(self, log_path = '/var/log/auth.log', sshd_path = '/etc/ssh/sshd_config'):
-
-        init(autoreset = True) # Colorama autoreset to default on each print
-
         self.log_path = log_path
         self.sshd_path = sshd_path
         
@@ -63,16 +59,16 @@ class SSHLogger:
         try:
             self.sshd_file = open(self.sshd_path, 'rt')
             self.sshd_text = self.sshd_file.read()
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: /etc/ssh/sshd_config file has been readed correctly\n")
+            print("  +  [[ OK ]]: /etc/ssh/sshd_config file has been readed correctly\n")
         except IOError:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: /etc/ssh/sshd_config file not found!\n")
+            print("  x  [[ ERROR ]]: /etc/ssh/sshd_config file not found!\n")
     def __check_log__(self):
         try:
             self.log_file = open(self.log_path, 'rt')
             self.log_text = self.log_file.read()
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: " + self.log_path + " file has been readed correctly\n")
+            print("  +  [[ OK ]]: " + self.log_path + " file has been readed correctly\n")
         except IOError: 
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tError: " + self.log_path + " file not found!\n")
+            print("  x  [[ ERROR ]]: " + self.log_path + " file not found!\n")
     def __classify__(self):
         log_lines = []
         for line in self.log_text.split("\n"):
@@ -89,14 +85,14 @@ class SSHLogger:
             elif entry.find("message repeated") != -1: self.repeated_messages.append(entry)
             elif entry.find("POSSIBLE BREAK-IN ATTEMPT") != -1: self.break_in_attempts.append(entry)
     def __get_preview__(self):
-        print Fore.YELLOW + "\tServers listening:\t\t" + Fore.GREEN + str(len(self.servers_listening))
-        print Fore.YELLOW + "\tOpened sessions:\t\t" + Fore.GREEN + str(len(self.opened_sessions))
-        print Fore.YELLOW + "\tClosed sessions:\t\t" + Fore.GREEN + str(len(self.closed_sessions))
-        print Fore.YELLOW + "\tAuthentication failures:\t" + Fore.RED + str(len(self.auth_failures))
-        print Fore.YELLOW + "\tNo identifications:\t\t" + Fore.RED + str(len(self.no_identifications))
-        print Fore.YELLOW + "\tAccepted Public Keys:\t\t" + Fore.GREEN + str(len(self.accepted_public_keys))
-        print Fore.YELLOW + "\tRepeated Messages:\t\t" + Fore.RED + str(len(self.repeated_messages))
-        print Fore.YELLOW + "\tBreak in attempts:\t\t" + Fore.RED + str(len(self.break_in_attempts)) + "\n"
+        print "\tServers listening:\t\t" + str(len(self.servers_listening))
+        print "\tOpened sessions:\t\t" + str(len(self.opened_sessions))
+        print "\tClosed sessions:\t\t" + str(len(self.closed_sessions))
+        print "\tAuthentication failures:\t" + str(len(self.auth_failures))
+        print "\tNo identifications:\t\t" + str(len(self.no_identifications))
+        print "\tAccepted Public Keys:\t\t" + str(len(self.accepted_public_keys))
+        print "\tRepeated Messages:\t\t" + str(len(self.repeated_messages))
+        print "\tBreak in attempts:\t\t" + str(len(self.break_in_attempts)) + "\n"
     def create_file(self, text):
         new_name = raw_input("\n\tEnter the output filename: ")
         new_path = raw_input("\n\tEnter complete path for output file without filename: ")
@@ -104,9 +100,8 @@ class SSHLogger:
             new_file = open(new_path + '/' + new_name, 'w+')
             new_file.write(text)
             new_file.close()
-            print "\n\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + '\tThe file has been saved in:' 
-            print '\n\t\t' + new_path + '/' + new_name + '\n'
-        else: print "\n\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + '\tInvalid path.' + new_path + '\n'
+            print "\n\tThe file has been saved in: " + new_path + '/' + new_name + '\n'
+        else: print "\n\tInvalid path: " + new_path + '\n'
     def get_log(self): return self.log_text
     def get_syslog_facility(self):
         sl = []
@@ -130,10 +125,10 @@ class SSHLogger:
     def get_servers(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT]. '''
         if len(self.servers_listening) == 0:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no servers listening.\n")
+            print("  x  [[ ERROR ]]: It seems like there is no servers listening.\n")
             raw_input("\tPress enter to continue...")
         else: 
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Servers listening have been loaded. (" + str(len(self.servers_listening)) + ")\n")
+            print("  +  [[ OK ]]: Servers listening have been loaded. (" + str(len(self.servers_listening)) + ")\n")
 
             show = True
             one_by_one = False
@@ -160,10 +155,10 @@ class SSHLogger:
     def get_opened_sessions(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2'''
         if len(self.opened_sessions) == 0:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no opened sessions.\n")
+            print("  x  [[ ERROR ]]: It seems like there is no opened sessions.\n")
             raw_input("\tPress enter to continue...")
         else: 
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Opened sessions have been loaded.\n")            
+            print("  +  [[ OK ]]: Opened sessions have been loaded.\n")            
 
             show = True
             one_by_one = False
@@ -189,10 +184,10 @@ class SSHLogger:
     def get_closed_sessions(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER] '''
         if len(self.closed_sessions) == 0:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no closeded sessions.\n")
+            print("  x  [[ ERROR ]]: It seems like there is no closeded sessions.\n")
             raw_input("\tPress enter to continue...")            
         else: 
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Closed sessions have been loaded.\n")
+            print("  +  [[ OK ]]: Closed sessions have been loaded.\n")
             
             show = True
             one_by_one = False
@@ -217,10 +212,10 @@ class SSHLogger:
     def get_auth_failures(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER] '''
         if len(self.auth_failures) == 0:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no authentication failures.\n")
+            print("  x  [[ ERROR ]]: It seems like there is no authentication failures.\n")
             raw_input("\tPress enter to continue...")
         else: 
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: authentication failures have been loaded.\n")            
+            print("  +  [[ OK ]]: Authentication failures have been loaded.\n")            
 
             show = True
             one_by_one = False
@@ -250,10 +245,10 @@ class SSHLogger:
     def get_no_identifications(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Did not receive identification string from [IP] '''
         if len(self.no_identifications) == 0:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no received identifications.\n")
+            print("  x  [[ ERROR ]]: It seems like there is no received identifications.\n")
             raw_input("\tPress enter to continue...")
         else: 
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: No received identifications have been loaded.\n")
+            print("  +  [[ OK ]]: No received identifications have been loaded.\n")
 
             show = True 
             one_by_one = False
@@ -279,10 +274,10 @@ class SSHLogger:
     def get_accepted_public_keys(self, save_as = ''):
         ''' Example auth.log line:[MONTH] [DAY] [TIME] [HOST] sshd: Accepted publickey for [USER] from [IP] port [PORT] ssh2: [KEY] '''
         if len(self.accepted_public_keys) == 0:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no accepted public keys.\n")
+            print("  x  [[ ERROR ]]: It seems like there is no accepted public keys.\n")
             raw_input("\tPress enter to continue...")
         else: 
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Accepted public keys have been loaded.\n")        
+            print("  +  [[ OK ]]: Accepted public keys have been loaded.\n")        
 
             show = True 
             one_by_one = False
@@ -312,10 +307,10 @@ class SSHLogger:
     def get_repeated_messages(self, save_as = ''):
         ''' Example auth.log line:[MONTH] [DAY] [TIME] [HOST] sshd: message repeated [X] times: [ Failed password for [USER] from [IP] port [PORT] ssh2] '''
         if len(self.repeated_messages) == 0:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no repeated messages.\n")
+            print("  x  [[ ERROR ]]: It seems like there is no repeated messages.\n")
             raw_input("\tPress enter to continue...")
         else: 
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Repeated messages have been loaded.\n")
+            print("  +  [[ OK ]]: Repeated messages have been loaded.\n")
 
             show = True 
             one_by_one = False
@@ -345,18 +340,18 @@ class SSHLogger:
     def get_break_in_attempts(self, save_as = ''):
         ''' Example auth.log line:[MONTH] [DAY] [TIME] [HOST] sshd: reverse mapping checking getaddrinfo for [ADDR. INFO] [IP] failed - POSSIBLE BREAK-IN ATTEMPT! '''
         if len(self.break_in_attempts) == 0:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tUps. It seems like there is no break in attempts.\n")
+            print("  x  [[ ERROR ]]: It seems like there is no break in attempts.\n")
             raw_input("\tPress enter to continue...")
         else: 
-            print("\t" + Back.GREEN + Style.BRIGHT + "  " + Back.RESET + "\tOK: Break in attempts have been loaded.\n")            
+            print("  +  [[ OK ]]: Break in attempts have been loaded.\n")            
 
             print("\tUnfortunately this break-in attempts are a very common occurrence.")
             print("\tIt is maybe an automated attack which is using well known usernames")
             print("\t(as 'root' or anyone created by common apps) to try and break into")
-            print("\tyour system. " + Back.WHITE + Fore.BLACK + "The message it doesn't mean that you have been hacked")
+            print("\tyour system. The message it doesn't mean that you have been hacked")
             print("\tjust that someone tried.\n")
-            print(Fore.YELLOW + "\tAnyway, if you can improve your openssh-server configuration visit:\n")
-            print(Back.BLUE + Fore.WHITE + "\t\t http://tiny.cc/p91r8x" + Back.RESET + Fore.RESET + "\n\n")
+            print("\tAnyway, if you can improve your openssh-server configuration visit:\n")
+            print("\t\t http://tiny.cc/p91r8x\n\n")
 
             raw_input("\tPress any key to continue...")
 
@@ -395,14 +390,14 @@ class SSHLogger:
 def entries_menu(show, one_by_one, text_file):
     option = '0'
     while option:
-        print(Fore.YELLOW + Style.BRIGHT + "\t1 - )   " + Style.NORMAL + Fore.RESET + "Show entries one by one")
-        print(Fore.YELLOW + Style.BRIGHT + "\t2 - )   " + Style.NORMAL + Fore.RESET + "Show entries one by one and save as a text file")
-        print(Fore.YELLOW + Style.BRIGHT + "\t3 - )   " + Style.NORMAL + Fore.RESET + "Show all entries")
-        print(Fore.YELLOW + Style.BRIGHT + "\t4 - )   " + Style.NORMAL + Fore.RESET + "Show all entries and save as a text file")
-        print(Fore.YELLOW + Style.BRIGHT + "\t5 - )   " + Style.NORMAL + Fore.RESET + "Don't show anything but save as a text file")        
-        print(Fore.YELLOW + Style.BRIGHT + "\t6 - )   " + Fore.RED + "Back to main menu")
+        print("\t1 - )   Show entries one by one")
+        print("\t2 - )   Show entries one by one and save as a text file")
+        print("\t3 - )   Show all entries")
+        print("\t4 - )   Show all entries and save as a text file")
+        print("\t5 - )   Don't show anything but save as a text file")        
+        print("\t6 - )   Back to main menu")
         print("\n")          
-        option = raw_input(Fore.YELLOW + Style.BRIGHT + "   Choose one of this options: ")
+        option = raw_input("   Choose one of this options: ")
         print("\n")        
         # Process selected option
         if option == "1": 
@@ -421,7 +416,7 @@ def entries_menu(show, one_by_one, text_file):
             show = False
             option = ''
         else:
-            print("\t" + Back.RED + Style.BRIGHT + "  " + Back.RESET + "\tIncorrect option. Try again!\n\n")
+            print("  x  [[ ERROR ]]: Incorrect option. Try again!\n\n")
             show = False
             option = '0'
         if option != '0': option = ''

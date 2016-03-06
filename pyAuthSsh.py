@@ -157,22 +157,22 @@ if __name__ == "__main__":
             print("\tjust that someone tried.\n")
             print("\tAnyway, if you can improve your openssh-server configuration visit:\n")
             print("\t\t http://tiny.cc/p91r8x\n\n")
-            raw_input("\tPress any key to continue...")
+            raw_input("\tPress any key to continue...\n")
             output.append(b)
     log_text = ''
     for t in output:
         for l in t:
             if not opts.nd_flag: print l
-            if opts.o_flag: raw_input("Press enter to show next entry... \n")
+            if opts.o_flag: raw_input("\tPress enter to show next entry... \n")
             if opts.log_file: log_text += l + '\n'
 
     ### Check log file path
     if opts.log_file: 
-        resp = logger.create_file(log_file, log_text)
+        resp = logger.create_file(opts.log_file, log_text)
         if resp == 1: 
-            print "  +  [[ OK ]]: The file has been saved in: " + log_file + '\n'
+            print "  +  [[ OK ]]: The file has been saved in: " + opts.log_file + '\n'
         elif resp == -1: 
             print "  x  [[ ERROR ]]: An error has ocurred. File can't be created.\n"
             print("  x               - Check if the path is correct.")
-            print("  x               - Check if do you have permissions for create files in this folder.")
+            print("  x               - Check if do you have permissions for create/overwrite files in this folder.")
             print("  x               - Then, try again.")

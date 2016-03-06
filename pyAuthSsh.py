@@ -84,10 +84,14 @@ if __name__ == "__main__":
     logger = SSHLogger('/var/log/auth.log', '/etc/ssh/sshd_config')
     raw_input("\tPress enter to continue...\n")
 
-    if opts.servers_flag: logger.get_servers()
-    if opts.accepted_pass_flag: logger.get_opened_sessions()
-    if opts.closed_sessions_flag: logger.get_closed_sessions()
-    if opts.failed_auth_flag: logger.get_auth_failures()
+    if opts.servers_flag: 
+    	servers = logger.get_servers()
+    if opts.accepted_pass_flag: 
+    	op_sessions = logger.get_opened_sessions()
+    if opts.closed_sessions_flag:
+        cl_sessions = logger.get_closed_sessions()
+    if opts.failed_auth_flag:
+        auth_failures = logger.get_auth_failures()
     if opts.no_ident_flag: logger.get_no_identifications()
     if opts.keys_flag: logger.get_accepted_public_keys()
     if opts.repeat_flag: logger.get_repeated_messages()

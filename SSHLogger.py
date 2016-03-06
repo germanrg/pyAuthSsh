@@ -54,7 +54,6 @@ class SSHLogger:
         self.break_in_attempts = []
 
         self.__classify__()
-        self.__get_preview__()
     def __check_sshd__(self):
         try:
             self.sshd_file = open(self.sshd_path, 'rt')
@@ -84,15 +83,17 @@ class SSHLogger:
             elif entry.find("Accepted publickey") != -1: self.accepted_public_keys.append(entry)
             elif entry.find("message repeated") != -1: self.repeated_messages.append(entry)
             elif entry.find("POSSIBLE BREAK-IN ATTEMPT") != -1: self.break_in_attempts.append(entry)
-    def __get_preview__(self):
-        print "\tServers listening:\t\t" + str(len(self.servers_listening))
-        print "\tOpened sessions:\t\t" + str(len(self.opened_sessions))
-        print "\tClosed sessions:\t\t" + str(len(self.closed_sessions))
-        print "\tAuthentication failures:\t" + str(len(self.auth_failures))
-        print "\tNo identifications:\t\t" + str(len(self.no_identifications))
-        print "\tAccepted Public Keys:\t\t" + str(len(self.accepted_public_keys))
-        print "\tRepeated Messages:\t\t" + str(len(self.repeated_messages))
-        print "\tBreak in attempts:\t\t" + str(len(self.break_in_attempts)) + "\n"
+    def get_preview(self):
+    	''' Return some relevant information string	'''
+        preview = "\tServers listening:\t\t" + str(len(self.servers_listening))
+        preview += "\tOpened sessions:\t\t" + str(len(self.opened_sessions))
+        preview += "\tClosed sessions:\t\t" + str(len(self.closed_sessions))
+        preview += "\tAuthentication failures:\t" + str(len(self.auth_failures))
+        preview += "\tNo identifications:\t\t" + str(len(self.no_identifications))
+        preview += "\tAccepted Public Keys:\t\t" + str(len(self.accepted_public_keys))
+        preview += "\tRepeated Messages:\t\t" + str(len(self.repeated_messages))
+        preview += "\tBreak in attempts:\t\t" + str(len(self.break_in_attempts)) + "\n"
+        return preview
     def create_file(self, text):
         new_name = raw_input("\n\tEnter the output filename: ")
         new_path = raw_input("\n\tEnter complete path for output file without filename: ")
@@ -122,50 +123,30 @@ class SSHLogger:
         if len(ll) == 0: return ''
         else: return ll[1] # Optimized for 'INFO' level
 
-    def get_servers(self, save_as = ''):
-        ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT]. '''
+    def get_servers(self):
+        ''' Return list with formatted log lines about servers up. Example log line: 
+        [MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT]. '''
+        text = []
         if len(self.servers_listening) == 0:
             print("  x  [[ ERROR ]]: It seems like there is no servers listening.\n")
-            raw_input("\tPress enter to continue...")
         else: 
             print("  +  [[ OK ]]: Servers listening have been loaded. (" + str(len(self.servers_listening)) + ")\n")
-
-            show = True
-            one_by_one = False
-            text_file = False
-            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
-
-            text_to_file = ''
-            # Print servers
             for server in self.servers_listening:
                 fields = server.split(" ")
                 fields = filter(lambda x: x!='', fields) # Remove blanks
                 output = '\tServer Host:\t' + str(fields[3]) + '\n\tServer up time:\t' 
                 date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-                output += date + "\n\t"
-                output += "Listening on port: " + str(fields[10]) + "\n"
-                text_to_file += output + '\n'
-                if show: print output
-                if one_by_one: raw_input("\n\tPress enter to continue...\n")
-            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
-            # Save output in text file
-            if text_file:
-                self.create_file(text_to_file)
-                raw_input("\n\tPress enter to continue...\n")
-    def get_opened_sessions(self, save_as = ''):
-        ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2'''
+                output += date + "\n\t" + "Listening on port: " + str(fields[10]) + "\n"
+                text.append(output)
+        return text
+    def get_opened_sessions(self):
+        ''' Return list with formatted log lines about opened sessions. Example log line: 
+        [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2'''
+        text = []
         if len(self.opened_sessions) == 0:
             print("  x  [[ ERROR ]]: It seems like there is no opened sessions.\n")
-            raw_input("\tPress enter to continue...")
         else: 
             print("  +  [[ OK ]]: Opened sessions have been loaded.\n")            
-
-            show = True
-            one_by_one = False
-            text_file = False
-            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
-
-            text_to_file = ''
             for accepted_password in self.opened_sessions:
                 fields = accepted_password.split(" ")
                 fields = filter(lambda x: x!='', fields) # Remove blanks
@@ -173,56 +154,32 @@ class SSHLogger:
                 output = '\tOpen session date: ' + date + "\n"
                 info = "\tUser: " + str(fields[8]) + "\tIP: " + str(fields[10]) + "\tPort:" + str(fields[12]) + "\n"
                 info += output
-                text_to_file += info + '\n'
-                if show: print info
-                if one_by_one: raw_input("\n\tPress enter to continue...\n")
-            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
-            # Save output in text file
-            if text_file:
-                self.create_file(text_to_file)
-                raw_input("\n\tPress enter to continue...\n")
-    def get_closed_sessions(self, save_as = ''):
-        ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER] '''
+                text.append(info)
+        return text
+    def get_closed_sessions(self):
+        ''' Return list with formatted log lines about closed sessions. Example log line: 
+        [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER] '''
+        text = []
         if len(self.closed_sessions) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no closeded sessions.\n")
-            raw_input("\tPress enter to continue...")            
+            print("  x  [[ ERROR ]]: It seems like there is no closeded sessions.\n")    
         else: 
             print("  +  [[ OK ]]: Closed sessions have been loaded.\n")
-            
-            show = True
-            one_by_one = False
-            text_file = False
-            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
-
-            text_to_file = ''
             for accepted_password in self.closed_sessions:
                 fields = accepted_password.split(" ")
                 fields = filter(lambda x: x!='', fields) # Remove blanks
                 date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
                 output = '\tClose session date:\t' + date + "\n"
                 info = "\tIP: " + str(fields[8]) + "\n" + output
-                text_to_file += info + '\n'
-                if show: print info
-                if one_by_one: raw_input("\n\tPress enter to continue...\n")
-            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
-            # Save output in text file
-            if text_file:
-                self.create_file(text_to_file)
-                raw_input("\n\tPress enter to continue...\n")
-    def get_auth_failures(self, save_as = ''):
-        ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER] '''
+                text.append(info)
+        return text
+    def get_auth_failures(self):
+        ''' Return list with formatted log lines about authentication failures. Example log line: 
+        [MONTH] [DAY] [TIME] [HOST] sshd: pam_unix(sshd:auth): authentication failure; [LOGNAME] [UID] [EUID] [TTY] [RUSER] [RHOST] [USER] '''
+        text = []
         if len(self.auth_failures) == 0:
             print("  x  [[ ERROR ]]: It seems like there is no authentication failures.\n")
-            raw_input("\tPress enter to continue...")
         else: 
             print("  +  [[ OK ]]: Authentication failures have been loaded.\n")            
-
-            show = True
-            one_by_one = False
-            text_file = False
-            show, one_by_one, text_file = entries_menu(show, one_by_one, text_file)
-
-            text_to_file = ''
             for fail in self.auth_failures:
                 fields = fail.split(" ")        
                 fields = filter(lambda x: x!='', fields) # Remove blanks
@@ -233,15 +190,8 @@ class SSHLogger:
                 else: info = str(fields[14]) + "\t"
                 info += str(fields[8]) + "\t" + str(fields[9]) + "\t" + str(fields[10]) + "\t\n\t" + str(fields[11]) + "\t" + str(fields[12]) + "\t" + str(fields[13]) + "\n"
                 output += info
-                text_to_file += output
-                if show: print output
-                if one_by_one: raw_input("\n\tPress enter to continue...\n")
-            if not one_by_one and show: raw_input("\n\tPress enter to continue...\n")
-            # Save output in text file
-            if text_file:
-                if show: raw_input("\n\tPress enter to continue...\n")
-                self.create_file(text_to_file)
-                raw_input("\n\tPress enter to continue...\n")
+                text.append(output)
+        return text
     def get_no_identifications(self, save_as = ''):
         ''' Example auth.log line: [MONTH] [DAY] [TIME] [HOST] sshd: Did not receive identification string from [IP] '''
         if len(self.no_identifications) == 0:

@@ -89,6 +89,10 @@ if __name__ == "__main__":
     raw_input("\tPress enter to continue...\n")
     os.system("clear")
     print header
+    print logger.get_preview()
+    raw_input("\tPress enter to continue...\n")
+    os.system("clear")
+    print header
 
     output = []
     if opts.s_flag:
@@ -146,7 +150,6 @@ if __name__ == "__main__":
             print("  x  [[ ERROR ]]: It seems like there is no break in attempts.\n")
         else:
             print("  +  [[ OK ]]: Break in attempts have been loaded. (" + str(len(b)) + ")\n")            
-
             print("\tUnfortunately this break-in attempts are a very common occurrence.")
             print("\tIt is maybe an automated attack which is using well known usernames")
             print("\t(as 'root' or anyone created by common apps) to try and break into")
@@ -154,7 +157,6 @@ if __name__ == "__main__":
             print("\tjust that someone tried.\n")
             print("\tAnyway, if you can improve your openssh-server configuration visit:\n")
             print("\t\t http://tiny.cc/p91r8x\n\n")
-
             raw_input("\tPress any key to continue...")
             output.append(b)
     log_text = ''
@@ -164,8 +166,13 @@ if __name__ == "__main__":
             if opts.o_flag: raw_input("Press enter to show next entry... \n")
             if opts.log_file: log_text += l + '\n'
 
-    # Check log file path
-    # if opts.log_file: logger.create_file(log_text, log_file)
-'''
-print("\tThanks for using. Bye!\n\n\tgnrg@tuta.io\n\n")
-'''
+    ### Check log file path
+    if opts.log_file: 
+        resp = logger.create_file(log_file, log_text)
+        if resp == 1: 
+            print "  +  [[ OK ]]: The file has been saved in: " + log_file + '\n'
+        elif resp == -1: 
+            print "  x  [[ ERROR ]]: An error has ocurred. File can't be created.\n"
+            print("  x               - Check if the path is correct.")
+            print("  x               - Check if do you have permissions for create files in this folder.")
+            print("  x               - Then, try again.")

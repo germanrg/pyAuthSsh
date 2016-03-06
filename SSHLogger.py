@@ -43,6 +43,9 @@ class SSHLogger:
         
         self.__check_sshd__()
         self.__check_log__()
+        self.log_level = self.__get_log_level__()
+        if self.log_level == 'INFO': print("  +  [[ OK ]]: LogLevel = INFO     ((sshd_conf file))\n")
+        else: print("  x  [[ ERROR ]]: LogLevel != INFO     ((sshd_conf file))\n  x  This warning can cause errors.")
 
         self.servers_listening = []
         self.opened_sessions = []
@@ -55,7 +58,7 @@ class SSHLogger:
 
         self.__classify__()
     def __check_sshd__(self):
-        ''' Check if a given sshd config file can be readed. '''
+        ''' Check if a given sshd config file can be readed and LogLevel is setted to 'INFO'. '''
         try:
             self.sshd_file = open(self.sshd_path, 'rt')
             self.sshd_text = self.sshd_file.read()
@@ -68,9 +71,6 @@ class SSHLogger:
             self.log_file = open(self.log_path, 'rt')
             self.log_text = self.log_file.read()
             print("  +  [[ OK ]]: " + self.log_path + " file has been readed correctly\n")
-            level = self.__get_log_level__()
-            if level == 'INFO': print("  +  [[ OK ]]: LogLevel = INFO     ((sshd_conf file))\n")
-            else: print("  +  [[ ERROR ]]: LogLevel != INFO     ((sshd_conf file))\n")
         except IOError: 
             print("  x  [[ ERROR ]]: " + self.log_path + " file not found!\n")
     def __classify__(self):
@@ -103,13 +103,14 @@ class SSHLogger:
         return self.log_text
     def get_preview(self):
         ''' Return some relevant information string '''
-        preview = "\tServers listening:\t\t" + str(len(self.servers_listening))
-        preview += "\tOpened sessions:\t\t" + str(len(self.opened_sessions))
-        preview += "\tClosed sessions:\t\t" + str(len(self.closed_sessions))
-        preview += "\tAuthentication failures:\t" + str(len(self.auth_failures))
-        preview += "\tNo identifications:\t\t" + str(len(self.no_identifications))
-        preview += "\tAccepted Public Keys:\t\t" + str(len(self.accepted_public_keys))
-        preview += "\tRepeated Messages:\t\t" + str(len(self.repeated_messages))
+        preview = "  +  Overview \n\n"
+        preview += "\tServers listening:\t\t" + str(len(self.servers_listening)) + "\n"
+        preview += "\tOpened sessions:\t\t" + str(len(self.opened_sessions)) + "\n"
+        preview += "\tClosed sessions:\t\t" + str(len(self.closed_sessions)) + "\n"
+        preview += "\tAuthentication failures:\t" + str(len(self.auth_failures)) + "\n"
+        preview += "\tNo identifications:\t\t" + str(len(self.no_identifications)) + "\n"
+        preview += "\tAccepted Public Keys:\t\t" + str(len(self.accepted_public_keys)) + "\n"
+        preview += "\tRepeated Messages:\t\t" + str(len(self.repeated_messages)) + "\n"
         preview += "\tBreak in attempts:\t\t" + str(len(self.break_in_attempts)) + "\n"
         return preview
     def get_servers(self):
@@ -188,9 +189,9 @@ class SSHLogger:
                 fields = identification.split(" ")
                 fields = filter(lambda x: x!='', fields) # Remove blanks
                 date = str(fields[2]) + " - " + str(fields[1]) + "/" + str(months[fields[0]])
-                output = '\tLog date:\t' + date + "\n"
+                output = '\tLog time:\t' + date + "\n"
                 info = "\tDid not receive identification string from:\t" + str(fields[11]) + "\n" + output
-                text.append(output)
+                text.append(info)
         return text
     def get_accepted_public_keys(self):
         ''' Return list with formatted log lines about accepted public keys. Example log line:
@@ -250,10 +251,10 @@ class SSHLogger:
                 text.append(info)
         return text
     def create_file(self, file, text):
-        ''' Create a new file and write given text on it. Return operation info string. '''
+        ''' Create a new file and write given text on it. Return -1 (Error) or 1 (Ok). '''
         try:
             new_file = open(file, 'w+')
             new_file.write(text)
             new_file.close()
-            return "\n\tThe file has been saved in: " + file + '\n'
-        except: return "\n\tAn error has ocurred. File can't be created.\n"
+            return 1
+        except: return -1

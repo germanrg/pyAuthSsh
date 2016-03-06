@@ -25,6 +25,24 @@ header = """
     +----------------------------------------------------+\n
 """
 
+def check_file_path(file):
+    ''' Check if the file path given is valid. '''
+    is_path = False
+    for c in file:
+        if c == '/': 
+            is_path = True
+            break
+    if is_path:
+        path = []
+        for x in file.split('/'): path.append(x)
+        path = path[1:-1] # Remove first blank and filename
+        file_path = ''
+        for x in path: file_path += '/' + x
+        if os.path.isdir(file_path): return True
+        else: return False
+    else: return False
+
+
 if __name__ == "__main__":
     parser = optparse.OptionParser(description = desc, version = version, usage = usage)
     ssh_opts = optparse.OptionGroup(parser, 'SSH Options')
@@ -167,12 +185,19 @@ if __name__ == "__main__":
             if opts.log_file: log_text += l + '\n'
 
     ### Check log file path
-    if opts.log_file: 
-        resp = logger.create_file(opts.log_file, log_text)
+    write_mode = 'a'
+    if opts.log_file:
+        if check_file_path(opts.log_file):
+            if os.path.isfile(opts.log_file):
+                overwrite = raw_input("  -  The given file already exists.\n  -  Do you want overwrite the existing file?[y/N]: ")
+                if overwrite == 'y' or overwrite == 'Y':
+                    write_mode = 'w'
+            resp = logger.create_file(opts.log_file, log_text, write_mode)
+        else: resp = -1
         if resp == 1: 
-            print "  +  [[ OK ]]: The file has been saved in: " + opts.log_file + '\n'
+            print "\n  +  [[ OK ]]: The file has been saved in: " + opts.log_file + '\n'
         elif resp == -1: 
-            print "  x  [[ ERROR ]]: An error has ocurred. File can't be created.\n"
+            print "\n  x  [[ ERROR ]]: An error has ocurred. File can't be created.\n"
             print("  x               - Check if the path is correct.")
             print("  x               - Check if do you have permissions for create/overwrite files in this folder.")
             print("  x               - Then, try again.")

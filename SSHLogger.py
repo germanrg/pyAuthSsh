@@ -250,10 +250,10 @@ class SSHLogger:
                 info += "\n" + output
                 text.append(info)
         return text
-    def create_file(self, file, text):
+    def create_file(self, file, text, mode = 'a'):
         ''' Create a new file and write given text on it. Return -1 (Error) or 1 (Ok). '''
         try:
-            new_file = open(file, 'w+')
+            new_file = open(file, mode)
             new_file.write(text)
             new_file.close()
             return 1

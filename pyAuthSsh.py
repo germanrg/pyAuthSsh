@@ -90,21 +90,82 @@ if __name__ == "__main__":
     os.system("clear")
     print header
 
-    if opts.s_flag: 
-    	servers = logger.get_servers()
-    if opts.ap_flag: 
-    	op_sessions = logger.get_opened_sessions()
+    output = []
+    if opts.s_flag:
+        s = logger.get_servers()
+        if len(s) == 0:
+            print("  x  [[ ERROR ]]: It seems like there is no servers listening.\n")
+    	else:
+            print("  +  [[ OK ]]: Servers listening have been loaded. (" + str(len(s)) + ")\n")
+            output.append(s)
+    if opts.ap_flag:
+        os = logger.get_opened_sessions()
+        if len(os) == 0:
+            print("  x  [[ ERROR ]]: It seems like there is no opened sessions.\n")
+        else:
+            print("  +  [[ OK ]]: Opened sessions have been loaded. (" + str(len(os)) + ")\n")  
+            output.append(os)
     if opts.cs_flag:
-        cl_sessions = logger.get_closed_sessions()
+        cs = logger.get_closed_sessions()
+        if len(cs) == 0:
+            print("  x  [[ ERROR ]]: It seems like there is no closeded sessions.\n")
+        else:
+            print("  +  [[ OK ]]: Closed sessions have been loaded. (" + str(len(cs)) + ")\n")
+            output.append(cs)
     if opts.fa_flag:
-        auth_failures = logger.get_auth_failures()
-    if opts.ni_flag: logger.get_no_identifications()
-    if opts.pk_flag: logger.get_accepted_public_keys()
-    if opts.r_flag: logger.get_repeated_messages()
-    if opts.b_flag: logger.get_break_in_attempts()
-    if opts.o_flag: print 'one flag'
-    if opts.nd_flag: print 'no display flag'
-    if opts.log_file: print opts.log_file
+        fa = logger.get_auth_failures()
+        if len(fa) == 0:
+            print("  x  [[ ERROR ]]: It seems like there is no authentication failures.\n")
+        else:
+            print("  +  [[ OK ]]: Authentication failures have been loaded. (" + str(len(fa)) + ")\n")
+            output.append(fa)
+    if opts.ni_flag:
+        ni = logger.get_no_identifications()
+        if len(ni) == 0:
+            print("  x  [[ ERROR ]]: It seems like there is no received identifications.\n")
+        else:
+            print("  +  [[ OK ]]: No received identifications have been loaded. (" + str(len(ni)) + ")\n")
+            output.append(ni)
+    if opts.pk_flag:
+        pk = logger.get_accepted_public_keys()
+        if len(pk) == 0:
+            print("  x  [[ ERROR ]]: It seems like there is no accepted public keys.\n")
+        else:
+            print("  +  [[ OK ]]: Accepted public keys have been loaded. (" + str(len(pk)) + ")\n")
+            output.append(pk)
+    if opts.r_flag: 
+        rm = logger.get_repeated_messages()
+        if len(rm) == 0:
+            print("  x  [[ ERROR ]]: It seems like there is no repeated messages.\n")
+        else:
+            print("  +  [[ OK ]]: Repeated messages have been loaded. (" + str(len(rm)) + ")\n")
+            output.append(rm)
+    if opts.b_flag:
+        b = logger.get_break_in_attempts()
+        if len(b) == 0:
+            print("  x  [[ ERROR ]]: It seems like there is no break in attempts.\n")
+        else:
+            print("  +  [[ OK ]]: Break in attempts have been loaded. (" + str(len(b)) + ")\n")            
+
+            print("\tUnfortunately this break-in attempts are a very common occurrence.")
+            print("\tIt is maybe an automated attack which is using well known usernames")
+            print("\t(as 'root' or anyone created by common apps) to try and break into")
+            print("\tyour system. The message it doesn't mean that you have been hacked")
+            print("\tjust that someone tried.\n")
+            print("\tAnyway, if you can improve your openssh-server configuration visit:\n")
+            print("\t\t http://tiny.cc/p91r8x\n\n")
+
+            raw_input("\tPress any key to continue...")
+            output.append(b)
+    log_text = ''
+    for t in output:
+        for l in t:
+            if not opts.nd_flag: print l
+            if opts.o_flag: raw_input("Press enter to show next entry... \n")
+            if opts.log_file: log_text += l + '\n'
+
+    # Check log file path
+    # if opts.log_file: logger.create_file(log_text, log_file)
 '''
 print("\tThanks for using. Bye!\n\n\tgnrg@tuta.io\n\n")
 '''

@@ -16,13 +16,13 @@ information about script usage and options use -h. """
 version = "%prog V0.1"
 usage = "usage: %prog [-hspcfnkrb] [-o|-d] [-l <file>]"
 header = """
-+----------------------------------------------------+
-|                                                    |
-|                    sshLogger.py                    |
-|                    -._.-**-._.-                    |
-|                      by  gNrg                      |
-|                                                    |
-+----------------------------------------------------+\n
+    +----------------------------------------------------+
+    |                                                    |
+    |                    sshLogger.py                    |
+    |                    -._.-**-._.-                    |
+    |                      by  gNrg                      |
+    |                                                    |
+    +----------------------------------------------------+\n
 """
 
 if __name__ == "__main__":
@@ -32,34 +32,34 @@ if __name__ == "__main__":
     file_opts = optparse.OptionGroup(parser, 'File Options')
 
     ssh_opts.add_option("-s", "--server-up", action="store_true",
-                        dest="servers_flag", default=False,
+                        dest="s_flag", default=False,
                         help="Show all times the SSH server has been launched")
     ssh_opts.add_option("-p", "--acc-passwords", action="store_true",
-                        dest="accepted_pass_flag", default=False,
+                        dest="ap_flag", default=False,
                         help="Show accepted passwords")
     ssh_opts.add_option("-c", "--closed-sessions", action="store_true",
-                        dest="closed_sessions_flag", default=False,
+                        dest="cs_flag", default=False,
                         help="Show closed sessions")
     ssh_opts.add_option("-f", "--failed-auth", action="store_true",
-                        dest="failed_auth_flag", default=False,
+                        dest="fa_flag", default=False,
                         help="Show failed authentications")
     ssh_opts.add_option("-n", "--no-idents", action="store_true",
-                        dest="no_ident_flag", default=False,
+                        dest="ni_flag", default=False,
                         help="Show SSH no received identifications")
     ssh_opts.add_option("-k", "--public-keys", action="store_true",
-                        dest="keys_flag", default=False,
+                        dest="pk_flag", default=False,
                         help="Show accepted public keys")
     ssh_opts.add_option("-r", "--repeat", action="store_true",
-                        dest="repeat_flag", default=False,
+                        dest="r_flag", default=False,
                         help="Show repeated messages")
     ssh_opts.add_option("-b", "--break-in", action="store_true",
-                        dest="breaks_flag", default=False,
+                        dest="b_flag", default=False,
                         help="Show break-in attempts")
     display_opts.add_option("-o", "--one-by-one", action="store_true",
-                        dest="one_flag", default=False,
+                        dest="o_flag", default=False,
                         help="Display entries one by one")
     display_opts.add_option("-d", "--no-display", action="store_true",
-                        dest="no_display_flag", default=False,
+                        dest="nd_flag", default=False,
                         help="No display information in <stdout>")
     file_opts.add_option("-l", "--log", dest="log_file",
                         default="", type="string", metavar='<FILE>', 
@@ -71,33 +71,39 @@ if __name__ == "__main__":
 
     (opts, args) = parser.parse_args()
 
-    if opts.one_flag and opts.no_display_flag:
+    if opts.o_flag and opts.nd_flag:
         parser.error("Option '-o' and option '-d' are incompatible. Choose only one of them.\n")
         parser.print_help()
         exit(-1)
 
-    # if no options: exit and error
+    options = opts.s_flag or opts.ap_flag or opts.cs_flag or opts.fa_flag or opts.ni_flag or opts.pk_flag or opts.r_flag or opts.b_flag
+    if not options:
+    	parser.error("Select at least one of this options: [-spcfnkrb].\n")
+    	parser.print_help()
+    	exit(-1)
 
     os.system("clear")
     print header
     ### Add inputs for these paths
     logger = SSHLogger('/var/log/auth.log', '/etc/ssh/sshd_config')
     raw_input("\tPress enter to continue...\n")
+    os.system("clear")
+    print header
 
-    if opts.servers_flag: 
+    if opts.s_flag: 
     	servers = logger.get_servers()
-    if opts.accepted_pass_flag: 
+    if opts.ap_flag: 
     	op_sessions = logger.get_opened_sessions()
-    if opts.closed_sessions_flag:
+    if opts.cs_flag:
         cl_sessions = logger.get_closed_sessions()
-    if opts.failed_auth_flag:
+    if opts.fa_flag:
         auth_failures = logger.get_auth_failures()
-    if opts.no_ident_flag: logger.get_no_identifications()
-    if opts.keys_flag: logger.get_accepted_public_keys()
-    if opts.repeat_flag: logger.get_repeated_messages()
-    if opts.breaks_flag: logger.get_break_in_attempts()
-    if opts.one_flag: print 'one flag'
-    if opts.no_display_flag: print 'no display flag'
+    if opts.ni_flag: logger.get_no_identifications()
+    if opts.pk_flag: logger.get_accepted_public_keys()
+    if opts.r_flag: logger.get_repeated_messages()
+    if opts.b_flag: logger.get_break_in_attempts()
+    if opts.o_flag: print 'one flag'
+    if opts.nd_flag: print 'no display flag'
     if opts.log_file: print opts.log_file
 '''
 print("\tThanks for using. Bye!\n\n\tgnrg@tuta.io\n\n")

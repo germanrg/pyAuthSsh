@@ -44,6 +44,7 @@ def check_file_path(file):
 
 
 if __name__ == "__main__":
+    # Configure script options
     parser = optparse.OptionParser(description = desc, version = version, usage = usage)
     ssh_opts = optparse.OptionGroup(parser, 'SSH Options')
     display_opts = optparse.OptionGroup(parser, 'Display Options')
@@ -89,22 +90,33 @@ if __name__ == "__main__":
 
     (opts, args) = parser.parse_args()
 
+    #Incompatible options
     if opts.o_flag and opts.nd_flag:
         parser.error("Option '-o' and option '-d' are incompatible. Choose only one of them.\n")
         parser.print_help()
         exit(-1)
 
+    # Required options
     options = opts.s_flag or opts.ap_flag or opts.cs_flag or opts.fa_flag or opts.ni_flag or opts.pk_flag or opts.r_flag or opts.b_flag
     if not options:
     	parser.error("Select at least one of this options: [-spcfnkrb].\n")
     	parser.print_help()
     	exit(-1)
 
+    # Getting sshd_conf and auth.log
+    os.system("clear")
+    actual_log = raw_input("\nEnter ssh log file path [Default: /var/log/auth.log]: ")
+    if not actual_log: actual_log = '/var/log/auth.log'
+    server_config = raw_input("Enter sshd config file path [Default: /etc/ssh/sshd_config]: ")
+    if not server_config: server_config = "/etc/ssh/sshd_config"
+
+    # Create Logger
     os.system("clear")
     print header
-    ### Add inputs for these paths
-    logger = SSHLogger('/var/log/auth.log', '/etc/ssh/sshd_config')
+    logger = SSHLogger(actual_log, server_config)
     raw_input("\tPress enter to continue...\n")
+
+    # Get an abstract of the information
     os.system("clear")
     print header
     print logger.get_preview()
@@ -112,6 +124,7 @@ if __name__ == "__main__":
     os.system("clear")
     print header
 
+    # Processing options
     output = []
     if opts.s_flag:
         s = logger.get_servers()
@@ -178,13 +191,13 @@ if __name__ == "__main__":
             raw_input("\tPress any key to continue...\n")
             output.append(b)
     log_text = ''
+    # Show output
     for t in output:
         for l in t:
             if not opts.nd_flag: print l
             if opts.o_flag: raw_input("\tPress enter to show next entry... \n")
             if opts.log_file: log_text += l + '\n'
-
-    ### Check log file path
+    # Write output into a file
     write_mode = 'a'
     if opts.log_file:
         if check_file_path(opts.log_file):

@@ -6,6 +6,18 @@
 import os, optparse
 from SSHLogger import *
 
+# Large string variables
+header = """
+    +----------------------------------------------------+
+    |                                                    |
+    |                    sshLogger.py                    |
+    |                    -._.-**-._.-                    |
+    |                      by  gNrg                      |
+    |                                                    |
+    +----------------------------------------------------+\n
+"""
+version = "%prog V0.1"
+usage = "usage: %prog [-hspcfnkrb] [-o|-d] [-l <file>]"
 desc = """%prog by gNrg   -   
 Simply script to get information from a given log file
 about your SSH server. The scripts provides all info
@@ -20,20 +32,9 @@ breakin_message = """\tUnfortunately this break-in attempts are a very common oc
 \tjust that someone tried.\n
 \tAnyway, if you can improve your openssh-server configuration visit:\n
 \t\t http://tiny.cc/p91r8x\n"""
-version = "%prog V0.1"
-usage = "usage: %prog [-hspcfnkrb] [-o|-d] [-l <file>]"
-header = """
-    +----------------------------------------------------+
-    |                                                    |
-    |                    sshLogger.py                    |
-    |                    -._.-**-._.-                    |
-    |                      by  gNrg                      |
-    |                                                    |
-    +----------------------------------------------------+\n
-"""
 
 def check_file_path(file):
-    ''' Check if the file path given is valid. '''
+    ''' Check if the file path given is a valid path. '''
     is_path = False
     for c in file:
         if c == '/': 
@@ -51,6 +52,7 @@ def check_file_path(file):
         return True
 
 def script_header(header):
+    ''' Clear screen and print script header '''
     os.system("clear")
     print header
 

@@ -211,7 +211,6 @@ if __name__ == "__main__":
     write_mode = 'a'
     if opts.log_file:
         if check_file_path(opts.log_file):
-            print os.path.isfile(opts.log_file)
             if os.path.isfile(opts.log_file):
                 overwrite = raw_input("  -  The given file already exists.\n  -  Do you want overwrite the existing file?[y/N]: ")
                 if overwrite == 'y' or overwrite == 'Y':

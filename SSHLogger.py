@@ -79,6 +79,7 @@ class SSHLogger:
     def __get_log_level__(self):
         ''' Return the log level information in sshd_config. '''
         ll = []
+        log_level = ''
         for line in self.sshd_text.split("\n"):
             if line.find("LogLevel") != -1:
                 log_level = line

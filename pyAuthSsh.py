@@ -40,8 +40,8 @@ def check_file_path(file):
         for x in path: file_path += '/' + x
         if os.path.isdir(file_path): return True
         else: return False
-    else: return False
-
+    else: 
+        return True
 
 if __name__ == "__main__":
     # Configure script options
@@ -134,12 +134,12 @@ if __name__ == "__main__":
             print("  +  [[ OK ]]: Servers listening have been loaded. (" + str(len(s)) + ")\n")
             output.append(s)
     if opts.ap_flag:
-        os = logger.get_opened_sessions()
-        if len(os) == 0:
+        ops = logger.get_opened_sessions()
+        if len(ops) == 0:
             print("  x  [[ ERROR ]]: It seems like there is no opened sessions.\n")
         else:
-            print("  +  [[ OK ]]: Opened sessions have been loaded. (" + str(len(os)) + ")\n")  
-            output.append(os)
+            print("  +  [[ OK ]]: Opened sessions have been loaded. (" + str(len(ops)) + ")\n")  
+            output.append(ops)
     if opts.cs_flag:
         cs = logger.get_closed_sessions()
         if len(cs) == 0:
@@ -201,6 +201,7 @@ if __name__ == "__main__":
     write_mode = 'a'
     if opts.log_file:
         if check_file_path(opts.log_file):
+            print os.path.isfile(opts.log_file)
             if os.path.isfile(opts.log_file):
                 overwrite = raw_input("  -  The given file already exists.\n  -  Do you want overwrite the existing file?[y/N]: ")
                 if overwrite == 'y' or overwrite == 'Y':

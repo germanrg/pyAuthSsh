@@ -1,4 +1,4 @@
-Usage: pyAuthSsh.py [-hspcfnkrb] [-o|-d] [-l <file>]
+Usage: sshLogger.py [-hspcfnkrb] [-o|-d] [-l <file>]
 
 This is a simply script to get information from a given log file
 about your SSH server. The scripts provides all info  if variable LOG_LEVEL

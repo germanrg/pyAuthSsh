@@ -3,23 +3,11 @@
 # gnrg(at)tuta.io
 #
 
-import os
-
-months = {"Jan" : 1,
-          "Feb" : 2,
-          "Mar" : 3,
-          "Apr" : 4,
-          "May" : 5,
-          "Jun" : 6,
-          "Jul" : 7,
-          "Aug" : 8,
-          "Sep" : 9,
-          "Oct" : 10,
-          "Nov" : 11,
-          "Dec" : 12,}
+months = {"Jan" : 1, "Feb" : 2, "Mar" : 3, "Apr" : 4, "May" : 5, "Jun" : 6,
+          "Jul" : 7, "Aug" : 8, "Sep" : 9, "Oct" : 10, "Nov" : 11, "Dec" : 12,}
 
 class SSHLogger:
-    """ SSH Logging Manager:
+    ''' SSH Logging Manager:
     - [MONTH] [DAY] [TIME] [HOST] sshd: Server listening on [IP] port [PORT].
     - [MONTH] [DAY] [TIME] [HOST] sshd: Accepted password for [USER] from [IP] port [PORT] ssh2
     - [MONTH] [DAY] [TIME] [HOST] sshd: Received disconnect from [IP] x: disconnected by [USER]
@@ -28,7 +16,7 @@ class SSHLogger:
     - [MONTH] [DAY] [TIME] [HOST] sshd: Accepted publickey for [USER] from [IP] port [PORT] ssh2: [KEY]
     - [MONTH] [DAY] [TIME] [HOST] sshd: message repeated [X] times: [ Failed password for [USER] from [IP] port [PORT] ssh2]
     - [MONTH] [DAY] [TIME] [HOST] sshd: reverse mapping checking getaddrinfo for [ADDR. INFO] [IP] failed - POSSIBLE BREAK-IN ATTEMPT!
-    """
+    '''
     
     log_path = ''
     log_text = ''

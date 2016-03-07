@@ -13,6 +13,13 @@ if variable LOG_LEVEL has the value INFO configured.
 You can save the given information in other file in
 text format using -l <path_to_file> option. For more
 information about script usage and options use -h. """
+breakin_message = """\tUnfortunately this break-in attempts are a very common occurrence.
+\tIt is maybe an automated attack which is using well known usernames
+\t(as 'root' or anyone created by common apps) to try and break into
+\tyour system. The message it doesn't mean that you have been hacked
+\tjust that someone tried.\n
+\tAnyway, if you can improve your openssh-server configuration visit:\n
+\t\t http://tiny.cc/p91r8x\n"""
 version = "%prog V0.1"
 usage = "usage: %prog [-hspcfnkrb] [-o|-d] [-l <file>]"
 header = """
@@ -42,6 +49,16 @@ def check_file_path(file):
         else: return False
     else: 
         return True
+
+def script_header(header):
+    os.system("clear")
+    print header
+
+def error_message(message):
+    print("  x  [[ ERROR ]] : " + message + "\n")
+
+def succes_message(message):
+    print("  +  [[ OK ]]: " + message + "\n")
 
 if __name__ == "__main__":
     # Configure script options
@@ -104,90 +121,81 @@ if __name__ == "__main__":
     	exit(-1)
 
     # Getting sshd_conf and auth.log
-    os.system("clear")
+    script_header(header)
     actual_log = raw_input("\nEnter ssh log file path [Default: /var/log/auth.log]: ")
     if not actual_log: actual_log = '/var/log/auth.log'
-    server_config = raw_input("Enter sshd config file path [Default: /etc/ssh/sshd_config]: ")
+    server_config = raw_input("\nEnter sshd config file path [Default: /etc/ssh/sshd_config]: ")
     if not server_config: server_config = "/etc/ssh/sshd_config"
 
     # Create Logger
-    os.system("clear")
-    print header
+    script_header(header)
     logger = SSHLogger(actual_log, server_config)
     raw_input("\tPress enter to continue...\n")
 
     # Get an abstract of the information
-    os.system("clear")
-    print header
+    script_header(header)
     print logger.get_preview()
     raw_input("\tPress enter to continue...\n")
-    os.system("clear")
-    print header
+    script_header(header)
 
     # Processing options
     output = []
     if opts.s_flag:
         s = logger.get_servers()
         if len(s) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no servers listening.\n")
+            error_message("It seems like there is no servers listening.")
     	else:
-            print("  +  [[ OK ]]: Servers listening have been loaded. (" + str(len(s)) + ")\n")
+            succes_message("Servers listening have been loaded. (" + str(len(s)) + ")")
             output.append(s)
     if opts.ap_flag:
         ops = logger.get_opened_sessions()
         if len(ops) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no opened sessions.\n")
+            error_message("It seems like there is no opened sessions.")
         else:
-            print("  +  [[ OK ]]: Opened sessions have been loaded. (" + str(len(ops)) + ")\n")  
+            succes_message("Opened sessions have been loaded. (" + str(len(ops)) + ")")  
             output.append(ops)
     if opts.cs_flag:
         cs = logger.get_closed_sessions()
         if len(cs) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no closeded sessions.\n")
+            error_message("It seems like there is no closeded sessions.")
         else:
-            print("  +  [[ OK ]]: Closed sessions have been loaded. (" + str(len(cs)) + ")\n")
+            succes_message("Closed sessions have been loaded. (" + str(len(cs)) + ")")
             output.append(cs)
     if opts.fa_flag:
         fa = logger.get_auth_failures()
         if len(fa) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no authentication failures.\n")
+            error_message("It seems like there is no authentication failures.")
         else:
-            print("  +  [[ OK ]]: Authentication failures have been loaded. (" + str(len(fa)) + ")\n")
+            succes_message("Authentication failures have been loaded. (" + str(len(fa)) + ")")
             output.append(fa)
     if opts.ni_flag:
         ni = logger.get_no_identifications()
         if len(ni) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no received identifications.\n")
+            error_message("It seems like there is no received identifications.")
         else:
-            print("  +  [[ OK ]]: No received identifications have been loaded. (" + str(len(ni)) + ")\n")
+            succes_message("No received identifications have been loaded. (" + str(len(ni)) + ")")
             output.append(ni)
     if opts.pk_flag:
         pk = logger.get_accepted_public_keys()
         if len(pk) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no accepted public keys.\n")
+            error_message("It seems like there is no accepted public keys.")
         else:
-            print("  +  [[ OK ]]: Accepted public keys have been loaded. (" + str(len(pk)) + ")\n")
+            succes_message("Accepted public keys have been loaded. (" + str(len(pk)) + ")")
             output.append(pk)
     if opts.r_flag: 
         rm = logger.get_repeated_messages()
         if len(rm) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no repeated messages.\n")
+            error_message("It seems like there is no repeated messages.")
         else:
-            print("  +  [[ OK ]]: Repeated messages have been loaded. (" + str(len(rm)) + ")\n")
+            succes_message("Repeated messages have been loaded. (" + str(len(rm)) + ")")
             output.append(rm)
     if opts.b_flag:
         b = logger.get_break_in_attempts()
         if len(b) == 0:
-            print("  x  [[ ERROR ]]: It seems like there is no break in attempts.\n")
+            error_message("It seems like there is no break in attempts.")
         else:
-            print("  +  [[ OK ]]: Break in attempts have been loaded. (" + str(len(b)) + ")\n")            
-            print("\tUnfortunately this break-in attempts are a very common occurrence.")
-            print("\tIt is maybe an automated attack which is using well known usernames")
-            print("\t(as 'root' or anyone created by common apps) to try and break into")
-            print("\tyour system. The message it doesn't mean that you have been hacked")
-            print("\tjust that someone tried.\n")
-            print("\tAnyway, if you can improve your openssh-server configuration visit:\n")
-            print("\t\t http://tiny.cc/p91r8x\n\n")
+            succes_message("Break in attempts have been loaded. (" + str(len(b)) + ")")            
+            print breakin_message
             raw_input("\tPress any key to continue...\n")
             output.append(b)
     log_text = ''
@@ -209,9 +217,10 @@ if __name__ == "__main__":
             resp = logger.create_file(opts.log_file, log_text, write_mode)
         else: resp = -1
         if resp == 1: 
-            print "\n  +  [[ OK ]]: The file has been saved in: " + opts.log_file + '\n'
+            succes_message("The file has been saved in: " + opts.log_file)
         elif resp == -1: 
-            print "\n  x  [[ ERROR ]]: An error has ocurred. File can't be created.\n"
-            print("  x               - Check if the path is correct.")
-            print("  x               - Check if do you have permissions for create/overwrite files in this folder.")
-            print("  x               - Then, try again.")
+            message = "An error has ocurred. File can't be created.\n"
+            message += "  x               - Check if the path is correct.\n"
+            message += "  x               - Check if do you have permissions for create/overwrite files in this folder.\n"
+            message += "  x               - Then, try again.\n"
+            error_message(message)
